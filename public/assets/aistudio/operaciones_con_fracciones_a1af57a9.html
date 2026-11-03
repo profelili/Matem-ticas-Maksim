@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación de Fracciones / Приложение для дробей</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+        
+        .fraction-input {
+            width: 3rem;
+            text-align: center;
+            appearance: textfield;
+        }
+        .fraction-input::-webkit-outer-spin-button,
+        .fraction-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .fraction-line {
+            border-bottom: 2px solid #374151;
+            margin: 4px 0;
+        }
+
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            body {
+                background-color: white;
+            }
+            .shadow-lg {
+                box-shadow: none !important;
+            }
+        }
+
+        /* Loading spinner for TTS */
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top: 3px solid #ffffff;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .model-circle {
+            transform: rotate(-90deg);
+        }
+    </style>
+</head>
+<body class="text-gray-800 antialiased min-h-screen p-4 md:p-8">
+
+    <!-- Error Modal (Custom MessageBox to avoid alert) -->
+    <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 transition-opacity">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl transform transition-transform scale-95">
+            <h3 class="text-xl font-bold text-red-600 mb-2 flex items-center gap-2">
+                <i class="fas fa-exclamation-triangle"></i> <span id="error-title">Error</span>
+            </h3>
+            <p id="error-message" class="text-gray-700 mb-6"></p>
+            <button onclick="closeError()" class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-xl transition-colors">
+                OK
+            </button>
+        </div>
+    </div>
+
+    <div class="max-w-5xl mx-auto bg-white rounded-3xl shadow-lg overflow-hidden">
+        <!-- Header -->
+        <div class="bg-indigo-600 text-white p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight" id="app-title">Fracciones Interactivas</h1>
+                <p class="text-indigo-200 mt-1" id="app-subtitle">Aprende paso a paso</p>
+            </div>
+            <div class="flex gap-3 no-print">
+                <button onclick="toggleLanguage()" class="bg-indigo-700 hover:bg-indigo-800 text-white px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 shadow-sm border border-indigo-500">
+                    <i class="fas fa-language"></i> <span id="lang-btn">Русский</span>
+                </button>
+                <button onclick="window.print()" class="bg-white hover:bg-gray-100 text-indigo-700 px-4 py-2 rounded-xl text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                    <i class="fas fa-print"></i> <span id="print-btn">Imprimir / Guardar</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="p-6 md:p-8 space-y-8">
+            
+            <!-- Controls -->
+            <div class="bg-indigo-50 rounded-2xl p-6 border border-indigo-100 no-print">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                    <div class="flex-1 flex flex-wrap items-center gap-4 w-full" id="fractions-container">
+                        <!-- Fractions will be rendered here dynamically -->
+                    </div>
+                    
+                    <div class="flex flex-col gap-3 min-w-[200px]">
+                        <button onclick="addFraction()" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 border border-indigo-300 font-semibold py-2 px-4 rounded-xl transition-colors flex justify-center items-center gap-2">
+                            <i class="fas fa-plus"></i> <span id="add-frac-btn">Añadir Fracción</span>
+                        </button>
+                        <button onclick="calculate()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition-colors flex justify-center items-center gap-2 text-lg">
+                            <i class="fas fa-calculator"></i> <span id="calc-btn">Calcular</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="hidden space-y-8">
+                
+                <hr class="border-gray-200">
+
+                <!-- Mathematical Expression -->
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4" id="expression-title">Expresión Matemática:</h2>
+                    <div class="flex items-center justify-center flex-wrap gap-4 text-2xl font-bold text-gray-700 bg-gray-50 p-6 rounded-2xl border border-gray-100" id="math-expression">
+                        <!-- Result math will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Visual Models -->
+                <div>
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex justify-between items-end">
+                        <span id="visual-title">Modelos Gráficos</span>
+                        <select id="model-type" onchange="renderVisuals()" class="text-sm border border-gray-300 rounded-lg p-1 bg-white no-print font-normal">
+                            <option value="circle" id="opt-circle">Círculos</option>
+                            <option value="bar" id="opt-bar">Barras</option>
+                        </select>
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="visual-models">
+                        <!-- SVGs will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Step by Step -->
+                <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-2 h-full bg-indigo-500"></div>
+                    <div class="flex justify-between items-center mb-6 pl-4">
+                        <h2 class="text-2xl font-bold text-gray-800" id="steps-title">Paso a Paso</h2>
+                        <button id="tts-btn" onclick="playAudio()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl shadow transition font-medium flex items-center gap-2 no-print">
+                            <i class="fas fa-volume-up"></i> <span id="tts-text">Escuchar</span>
+                        </button>
+                    </div>
+                    
+                    <div id="steps-container" class="space-y-4 pl-4 text-gray-700 leading-relaxed text-lg">
+                        <!-- Steps injected here -->
+                    </div>
+
+                    <!-- Audio Player hidden by default -->
+                    <audio id="audio-player" class="mt-6 w-full hidden" controls></audio>
+                </div>
+
+            </div>
+            
+            <!-- Empty state -->
+            <div id="empty-state" class="text-center py-12 text-gray-400">
+                <i class="fas fa-shapes text-6xl mb-4 text-gray-300"></i>
+                <p class="text-lg" id="empty-msg">Agrega fracciones y presiona Calcular para ver los resultados.</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script>
+        // Dictionary for Translations
+        const dict = {
+            es: {
+                title: "Fracciones Interactivas",
+                subtitle: "Aprende paso a paso con modelos visuales",
+                langBtn: "Русский",
+                printBtn: "Imprimir / Guardar",
+                addFracBtn: "Añadir Fracción",
+                calcBtn: "Calcular",
+                expressionTitle: "Expresión Matemática:",
+                visualTitle: "Modelos Gráficos",
+                optCircle: "Modelo Circular",
+                optBar: "Modelo de Barras",
+                stepsTitle: "Resolución Paso a Paso",
+                ttsText: "Escuchar Guía",
+                emptyMsg: "Ingresa los valores y presiona Calcular para ver los resultados.",
+                errorTitle: "Error",
+                errDenom: "El denominador no puede ser cero.",
+                errEmpty: "Por favor, completa todos los campos numéricos.",
+                errTTS: "Ocurrió un error al generar el audio. Intenta de nuevo.",
+                opAdd: "Suma",
+                opSub: "Resta",
+                opMul: "Multiplicación",
+                opDiv: "División",
+                step1AddSub: "1. Encontramos un denominador común (Mínimo Común Múltiplo) para las fracciones.",
+                step2AddSub: "2. Convertimos las fracciones para que tengan el mismo denominador.",
+                step3AddSub: "3. Realizamos la operación con los numeradores manteniendo el denominador común.",
+                step1Mul: "1. Para multiplicar fracciones, multiplicamos los numeradores entre sí y los denominadores entre sí.",
+                step2Mul: "2. Multiplicamos: ",
+                step1Div: "1. Para dividir fracciones, multiplicamos la primera fracción por el inverso de la segunda fracción.",
+                step2Div: "2. Invertimos y multiplicamos: ",
+                stepFinal: "Resultado final simplificado: ",
+                ttsPromptPrefix: "Actúa como un profesor amable. Lee esta resolución matemática paso a paso en español de manera clara y pausada:"
+            },
+            ru: {
+                title: "Интерактивные дроби",
+                subtitle: "Учитесь шаг за шагом с визуальными моделями",
+                langBtn: "Español",
+                printBtn: "Печать / Сохранить",
+                addFracBtn: "Добавить дробь",
+                calcBtn: "Вычислить",
+                expressionTitle: "Математическое выражение:",
+                visualTitle: "Графические модели",
+                optCircle: "Круговая модель",
+                optBar: "Барная модель",
+                stepsTitle: "Пошаговое решение",
+                ttsText: "Слушать объяснение",
+                emptyMsg: "Введите значения и нажмите Вычислить, чтобы увидеть результаты.",
+                errorTitle: "Ошибка",
+                errDenom: "Знаменатель не может быть равен нулю.",
+                errEmpty: "Пожалуйста, заполните все числовые поля.",
+                errTTS: "Произошла ошибка при генерации аудио. Попробуйте еще раз.",
+                opAdd: "Сложение",
+                opSub: "Вычитание",
+                opMul: "Умножение",
+                opDiv: "Деление",
+                step1AddSub: "1. Находим общий знаменатель (наименьшее общее кратное) для дробей.",
+                step2AddSub: "2. Преобразуем дроби так, чтобы у них был одинаковый знаменатель.",
+                step3AddSub: "3. Выполняем операцию с числителями, сохраняя общий знаменатель.",
+                step1Mul: "1. Чтобы умножить дроби, мы перемножаем числители между собой и знаменатели между собой.",
+                step2Mul: "2. Умножаем: ",
+                step1Div: "1. Чтобы разделить дроби, мы умножаем первую дробь на обратную второй дроби.",
+                step2Div: "2. Переворачиваем и умножаем: ",
+                stepFinal: "Упрощенный итоговый результат: ",
+                ttsPromptPrefix: "Действуй как дружелюбный учитель. Прочитай это математическое решение пошагово на русском языке четко и медленно:"
+            }
+        };
+
+        // Application State
+        let currentLang = 'es';
+        let fractions = [
+            { num: 1, den: 2, op: '+' },
+            { num: 1, den: 4, op: null }
+        ];
+        let calculationSteps = [];
+        let finalResult = null;
+
+        // Initialize UI
+        window.onload = () => {
+            renderInputs();
+            updateLanguageUI();
+        };
+
+        // UI Language Toggle
+        function toggleLanguage() {
+            currentLang = currentLang === 'es' ? 'ru' : 'es';
+            updateLanguageUI();
+            renderInputs();
+            if (finalResult) calculate(); // Recalculate to translate steps
+        }
+
+        function updateLanguageUI() {
+            const t = dict[currentLang];
+            document.getElementById('app-title').innerText = t.title;
+            document.getElementById('app-subtitle').innerText = t.subtitle;
+            document.getElementById('lang-btn').innerText = t.langBtn;
+            document.getElementById('print-btn').innerText = t.printBtn;
+            document.getElementById('add-frac-btn').innerText = t.addFracBtn;
+            document.getElementById('calc-btn').innerText = t.calcBtn;
+            document.getElementById('expression-title').innerText = t.expressionTitle;
+            document.getElementById('visual-title').innerText = t.visualTitle;
+            document.getElementById('opt-circle').innerText = t.optCircle;
+            document.getElementById('opt-bar').innerText = t.optBar;
+            document.getElementById('steps-title').innerText = t.stepsTitle;
+            
+            const ttsBtn = document.getElementById('tts-text');
+            if (ttsBtn.innerText !== 'Cargando...' && ttsBtn.innerText !== 'Загрузка...') {
+                ttsBtn.innerText = t.ttsText;
+            }
+            
+            document.getElementById('empty-msg').innerText = t.emptyMsg;
+            document.getElementById('error-title').innerText = t.errorTitle;
+        }
+
+        // Custom Error Message Box
+        function showError(messageKey) {
+            document.getElementById('error-message').innerText = dict[currentLang][messageKey] || messageKey;
+            document.getElementById('error-modal').classList.remove('hidden');
+        }
+        function closeError() {
+            document.getElementById('error-modal').classList.add('hidden');
+        }
+
+        // Input Rendering
+        function renderInputs() {
+            const container = document.getElementById('fractions-container');
+            container.innerHTML = '';
+            
+            fractions.forEach((frac, index) => {
+                const isLast = index === fractions.length - 1;
+                
+                const fracEl = document.createElement('div');
+                fracEl.className = 'flex items-center gap-4';
+                
+                const inputWrapper = document.createElement('div');
+                inputWrapper.className = 'flex flex-col items-center bg-white p-2 rounded-xl shadow-sm border border-gray-200';
+                
+                inputWrapper.innerHTML = `
+                    <input type="number" value="${frac.num}" id="num-${index}" onchange="updateFrac(${index}, 'num', this.value)" class="fraction-input text-xl font-bold bg-transparent focus:outline-none text-indigo-700">
+                    <div class="fraction-line w-full"></div>
+                    <input type="number" value="${frac.den}" id="den-${index}" onchange="updateFrac(${index}, 'den', this.value)" class="fraction-input text-xl font-bold bg-transparent focus:outline-none text-indigo-700">
+                `;
+                fracEl.appendChild(inputWrapper);
+
+                if (!isLast) {
+                    const opWrapper = document.createElement('div');
+                    opWrapper.innerHTML = `
+                        <select onchange="updateFrac(${index}, 'op', this.value)" class="text-xl font-bold bg-white border border-gray-200 shadow-sm rounded-lg p-2 text-gray-700 focus:outline-none cursor-pointer">
+                            <option value="+" ${frac.op === '+' ? 'selected' : ''}>+</option>
+                            <option value="-" ${frac.op === '-' ? 'selected' : ''}>−</option>
+                            <option value="*" ${frac.op === '*' ? 'selected' : ''}>×</option>
+                            <option value="/" ${frac.op === '/' ? 'selected' : ''}>÷</option>
+                        </select>
+                    `;
+                    fracEl.appendChild(opWrapper);
+                }
+
+                if (index > 1 && isLast) {
+                    const removeBtn = document.createElement('button');
+                    removeBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                    removeBtn.className = 'text-red-400 hover:text-red-600 transition p-2 bg-white rounded-full shadow-sm border border-gray-100';
+                    removeBtn.onclick = () => removeFraction(index);
+                    fracEl.appendChild(removeBtn);
+                }
+
+                container.appendChild(fracEl);
+            });
+        }
+
+        function updateFrac(index, field, value) {
+            if (field === 'op') {
+                fractions[index].op = value;
+            } else {
+                fractions[index][field] = parseInt(value) || 0;
+            }
+        }
+
+        function addFraction() {
+            fractions[fractions.length - 1].op = '+';
+            fractions.push({ num: 1, den: 2, op: null });
+            renderInputs();
+        }
+
+        function removeFraction(index) {
+            fractions.splice(index, 1);
+            fractions[fractions.length - 1].op = null;
+            renderInputs();
+        }
+
+        // Mathematical Logic Core
+        function gcd(a, b) {
+            a = Math.abs(a); b = Math.abs(b);
+            while (b) { let t = b; b = a % b; a = t; }
+            return a;
+        }
+
+        function lcm(a, b) {
+            return (Math.abs(a * b)) / gcd(a, b);
+        }
+
+        function simplify(num, den) {
+            const divisor = gcd(num, den);
+            return { num: num / divisor, den: den / divisor };
+        }
+
+        function addFractions(f1, f2, isSubtract = false) {
+            const commonDenom = lcm(f1.den, f2.den);
+            const n1 = f1.num * (commonDenom / f1.den);
+            let n2 = f2.num * (commonDenom / f2.den);
+            if (isSubtract) n2 = -n2;
+            const finalNum = n1 + n2;
+            return simplify(finalNum, commonDenom);
+        }
+
+        function mulFractions(f1, f2) {
+            return simplify(f1.num * f2.num, f1.den * f2.den);
+        }
+
+        function divFractions(f1, f2) {
+            return simplify(f1.num * f2.den, f1.den * f2.num);
+        }
+
+        // The Calculation Process
+        function calculate() {
+            // Validation
+            for (let f of fractions) {
+                if (f.den === 0) return showError('errDenom');
+                if (isNaN(f.num) || isNaN(f.den)) return showError('errEmpty');
+            }
+
+            const t = dict[currentLang];
+            calculationSteps = [];
+            
+            // To keep things visually explainable, we process sequentially left to right
+            let current = { num: fractions[0].num, den: fractions[0].den };
+            
+            // Generate visual expressions
+            let mathHTML = `<div class="flex flex-col items-center"><span class="block">${current.num}</span><div class="fraction-line w-full"></div><span class="block">${current.den}</span></div>`;
+
+            for (let i = 1; i < fractions.length; i++) {
+                const next = { num: fractions[i].num, den: fractions[i].den };
+                const op = fractions[i-1].op;
+                
+                let opSign = op;
+                if (op === '*') opSign = '×';
+                if (op === '/') opSign = '÷';
+                if (op === '-') opSign = '−';
+                
+                mathHTML += `<span class="mx-3 text-indigo-500">${opSign}</span>`;
+                mathHTML += `<div class="flex flex-col items-center"><span class="block">${next.num}</span><div class="fraction-line w-full"></div><span class="block">${next.den}</span></div>`;
+
+                if (op === '+' || op === '-') {
+                    calculationSteps.push(t.step1AddSub);
+                    calculationSteps.push(t.step2AddSub + ` (${current.num}/${current.den} ${op} ${next.num}/${next.den})`);
+                    calculationSteps.push(t.step3AddSub);
+                    current = addFractions(current, next, op === '-');
+                } else if (op === '*') {
+                    calculationSteps.push(t.step1Mul);
+                    calculationSteps.push(t.step2Mul + `(${current.num} × ${next.num}) / (${current.den} × ${next.den})`);
+                    current = mulFractions(current, next);
+                } else if (op === '/') {
+                    calculationSteps.push(t.step1Div);
+                    calculationSteps.push(t.step2Div + `(${current.num} × ${next.den}) / (${current.den} × ${next.num})`);
+                    current = divFractions(current, next);
+                }
+            }
+
+            // Handle negative denominators from division/subtraction
+            if (current.den < 0) {
+                current.num = -current.num;
+                current.den = -current.den;
+            }
+
+            finalResult = current;
+            calculationSteps.push(`${t.stepFinal} ${finalResult.num} / ${finalResult.den}`);
+
+            mathHTML += `<span class="mx-3 text-indigo-500">=</span>`;
+            mathHTML += `<div class="flex flex-col items-center text-emerald-600"><span class="block">${finalResult.num}</span><div class="border-b-2 border-emerald-600 w-full my-1"></div><span class="block">${finalResult.den}</span></div>`;
+
+            document.getElementById('math-expression').innerHTML = mathHTML;
+
+            // Render Steps
+            const stepsContainer = document.getElementById('steps-container');
+            stepsContainer.innerHTML = '';
+            calculationSteps.forEach((step, idx) => {
+                stepsContainer.innerHTML += `<p class="mb-2"><span class="font-bold text-indigo-500 mr-2">•</span>${step}</p>`;
+            });
+
+            // Swap view
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('results-section').classList.remove('hidden');
+
+            renderVisuals();
+            
+            // Hide audio player automatically upon recalculate
+            document.getElementById('audio-player').classList.add('hidden');
+        }
+
+        // SVG Visual Models Generation
+        function renderVisuals() {
+            if (!finalResult) return;
+            const container = document.getElementById('visual-models');
+            const type = document.getElementById('model-type').value;
+            container.innerHTML = '';
+
+            // We will render the first fraction, the operation sign, the second fraction, and the result.
+            // If more than 2 fractions, we just render all inputs and the result.
+            
+            fractions.forEach((f, i) => {
+                container.appendChild(createVisualCard(f, `Fracción ${i+1}`, type));
+                if (i < fractions.length - 1) {
+                    const op = document.createElement('div');
+                    op.className = 'flex items-center justify-center text-4xl font-black text-gray-300';
+                    let sign = fractions[i].op;
+                    if(sign === '*') sign = '×';
+                    if(sign === '/') sign = '÷';
+                    if(sign === '-') sign = '−';
+                    op.innerText = sign;
+                    container.appendChild(op);
+                }
+            });
+
+            const equals = document.createElement('div');
+            equals.className = 'flex items-center justify-center text-4xl font-black text-emerald-300';
+            equals.innerText = '=';
+            container.appendChild(equals);
+
+            container.appendChild(createVisualCard(finalResult, 'Resultado / Результат', type, true));
+        }
+
+        function createVisualCard(frac, label, type, isResult = false) {
+            const div = document.createElement('div');
+            div.className = `flex flex-col items-center p-6 bg-white border ${isResult ? 'border-emerald-200 bg-emerald-50' : 'border-gray-200'} rounded-2xl shadow-sm`;
+            
+            const title = document.createElement('h4');
+            title.className = `text-sm font-bold mb-4 ${isResult ? 'text-emerald-700' : 'text-gray-500 uppercase tracking-wide'}`;
+            title.innerText = label;
+            div.appendChild(title);
+
+            const visualWrapper = document.createElement('div');
+            visualWrapper.className = 'flex flex-wrap justify-center gap-4';
+
+            // Safe handling for visualization (avoid massive loops if numbers are huge)
+            let num = Math.abs(frac.num);
+            let den = Math.abs(frac.den);
+            
+            if (den === 0) den = 1;
+            if (den > 100 || num > 500) {
+                visualWrapper.innerHTML = '<span class="text-sm text-gray-400 text-center">Valores demasiado altos para representar visualmente.</span>';
+                div.appendChild(visualWrapper);
+                return div;
+            }
+
+            const wholeParts = Math.floor(num / den);
+            const remainder = num % den;
+            const totalShapes = wholeParts + (remainder > 0 ? 1 : 0);
+            
+            // Force at least 1 empty shape if num is 0
+            const loops = totalShapes === 0 ? 1 : totalShapes;
+            const colorClass = isResult ? 'text-emerald-500' : 'text-indigo-500';
+
+            for (let i = 0; i < loops; i++) {
+                let fillNum = den;
+                if (i === loops - 1 && remainder > 0) fillNum = remainder;
+                if (num === 0) fillNum = 0;
+
+                if (type === 'circle') {
+                    visualWrapper.appendChild(createCircleSVG(fillNum, den, colorClass));
+                } else {
+                    visualWrapper.appendChild(createBarSVG(fillNum, den, colorClass));
+                }
+            }
+
+            if (frac.num < 0) {
+                const negSign = document.createElement('div');
+                negSign.className = 'w-full text-center text-red-500 font-bold mt-2';
+                negSign.innerText = '(Negativo / Отрицательный)';
+                visualWrapper.appendChild(negSign);
+            }
+
+            div.appendChild(visualWrapper);
+            return div;
+        }
+
+        function createCircleSVG(filled, total, colorClass) {
+            const svgNS = "http://www.w3.org/2000/svg";
+            const svg = document.createElementNS(svgNS, "svg");
+            svg.setAttribute("viewBox", "0 0 32 32");
+            svg.setAttribute("class", `w-16 h-16 model-circle ${colorClass}`);
+            
+            const bgCircle = document.createElementNS(svgNS, "circle");
+            bgCircle.setAttribute("r", "16");
+            bgCircle.setAttribute("cx", "16");
+            bgCircle.setAttribute("cy", "16");
+            bgCircle.setAttribute("fill", "#f3f4f6");
+            bgCircle.setAttribute("stroke", "#d1d5db");
+            bgCircle.setAttribute("stroke-width", "0.5");
+            svg.appendChild(bgCircle);
+
+            if (filled > 0) {
+                const fractionCircle = document.createElementNS(svgNS, "circle");
+                fractionCircle.setAttribute("r", "8");
+                fractionCircle.setAttribute("cx", "16");
+                fractionCircle.setAttribute("cy", "16");
+                fractionCircle.setAttribute("fill", "transparent");
+                fractionCircle.setAttribute("stroke", "currentColor");
+                fractionCircle.setAttribute("stroke-width", "16");
+                
+                const percentage = (filled / total) * 100;
+                fractionCircle.setAttribute("stroke-dasharray", `${percentage} 100`);
+                fractionCircle.setAttribute("pathLength", "100");
+                svg.appendChild(fractionCircle);
+            }
+
+            // Draw slice lines
+            for (let i = 0; i < total; i++) {
+                const line = document.createElementNS(svgNS, "line");
+                const angle = (i / total) * Math.PI * 2;
+                const x2 = 16 + 16 * Math.cos(angle);
+                const y2 = 16 + 16 * Math.sin(angle);
+                
+                line.setAttribute("x1", "16");
+                line.setAttribute("y1", "16");
+                line.setAttribute("x2", x2.toString());
+                line.setAttribute("y2", y2.toString());
+                line.setAttribute("stroke", "white");
+                line.setAttribute("stroke-width", "0.5");
+                svg.appendChild(line);
+            }
+
+            return svg;
+        }
+
+        function createBarSVG(filled, total, colorClass) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex flex-col border-2 border-gray-300 rounded overflow-hidden h-24 w-12 ${colorClass}`;
+            
+            for(let i=0; i<total; i++) {
+                const block = document.createElement('div');
+                block.className = `flex-1 w-full border-b border-white ${i < filled ? 'bg-current' : 'bg-gray-100'}`;
+                if (i === total - 1) block.classList.remove('border-b');
+                // fill from bottom up
+                wrapper.prepend(block); 
+            }
+            return wrapper;
+        }
+
+        // --- TTS Implementation using Gemini API ---
+        async function playAudio() {
+            if (calculationSteps.length === 0) return;
+
+            const ttsBtn = document.getElementById('tts-btn');
+            const ttsText = document.getElementById('tts-text');
+            const icon = ttsBtn.querySelector('i');
+            
+            // Loading State
+            ttsBtn.disabled = true;
+            icon.className = 'spinner';
+            const originalText = ttsText.innerText;
+            ttsText.innerText = currentLang === 'es' ? 'Cargando...' : 'Загрузка...';
+
+            const combinedText = calculationSteps.join("\n");
+            const prompt = dict[currentLang].ttsPromptPrefix + "\n" + combinedText;
+
+            try {
+                // Keep API key empty as instructed by system prompt
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+                
+                const payload = {
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: "Puck" }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (result.error) {
+                    console.error("API Error:", result.error);
+                    throw new Error("API returned an error");
+                }
+
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType; // audio/L16;rate=...
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    // Extract Sample Rate
+                    const match = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = match ? parseInt(match[1], 10) : 24000;
+                    
+                    // Decode PCM and wrap to WAV
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    // Play audio
+                    const player = document.getElementById('audio-player');
+                    player.src = audioUrl;
+                    player.classList.remove('hidden');
+                    player.play();
+                } else {
+                    throw new Error("Invalid format received");
+                }
+
+            } catch (error) {
+                console.error("TTS Error:", error);
+                showError('errTTS');
+            } finally {
+                // Restore button state
+                ttsBtn.disabled = false;
+                icon.className = 'fas fa-volume-up';
+                ttsText.innerText = originalText;
+            }
+        }
+
+        // WAV Encoding Utilities for PCM16 Data
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        function pcmToWav(pcm16, sampleRate) {
+            const numChannels = 1;
+            const byteRate = sampleRate * numChannels * 2;
+            const blockAlign = numChannels * 2;
+            const buffer = new ArrayBuffer(44 + pcm16.byteLength);
+            const view = new DataView(buffer);
+            
+            // RIFF header
+            writeString(view, 0, 'RIFF');
+            view.setUint32(4, 36 + pcm16.byteLength, true);
+            writeString(view, 8, 'WAVE');
+            
+            // fmt sub-chunk
+            writeString(view, 12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true); // Linear PCM
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true); // Bits per sample
+            
+            // data sub-chunk
+            writeString(view, 36, 'data');
+            view.setUint32(40, pcm16.byteLength, true);
+            
+            // Write actual PCM data
+            let offset = 44;
+            for (let i = 0; i < pcm16.length; i++, offset += 2) {
+                view.setInt16(offset, pcm16[i], true); // Little endian
+            }
+            
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+        function writeString(view, offset, string) {
+            for (let i = 0; i < string.length; i++) {
+                view.setUint8(offset + i, string.charCodeAt(i));
+            }
+        }
+    </script>
+</body>
+</html>

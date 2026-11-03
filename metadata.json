@@ -1,0 +1,6 @@
+{
+  "name": "FraccionaMente: Dominio y Retos de Fracciones",
+  "description": "Juego interactivo y gamificado de operaciones matemáticas con fracciones (suma, resta, multiplicación y división), retos cronometrados, niveles, cuaderno de errores, gráficos de rendimiento, notificaciones y soporte offline.",
+  "requestFramePermissions": ["notifications"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
