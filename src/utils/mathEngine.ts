@@ -339,3 +339,113 @@ export function generateProblem(
     visualType: (f1.den <= 10 && f2.den <= 10) ? 'circle' : 'bar',
   };
 }
+
+export function solveMultipleFractions(
+  fractions: Fraction[],
+  ops: Operation[],
+  lang: Language = 'es'
+): { result: Fraction; steps: string[] } {
+  const isRu = lang === 'ru';
+  if (fractions.length === 0) {
+    return { result: { num: 0, den: 1 }, steps: [] };
+  }
+  if (fractions.length === 1) {
+    const simp = simplifyFraction(fractions[0]);
+    return { result: simp, steps: [isRu ? `Дробь: ${simp.num}/${simp.den}` : `Fracción: ${simp.num}/${simp.den}`] };
+  }
+  if (fractions.length === 2) {
+    return solveOperation(fractions[0], fractions[1], ops[0] || '+', lang);
+  }
+
+  const steps: string[] = [];
+  const onlyAddSub = ops.slice(0, fractions.length - 1).every(o => o === '+' || o === '-');
+
+  if (onlyAddSub) {
+    // Educational LCM method for multiple additions/subtractions
+    const commonDenom = fractions.reduce((acc, f) => lcm(acc, f.den), fractions[0].den);
+    
+    // Step 1: Identify denominators and LCM
+    const denList = fractions.map(f => f.den).join(', ');
+    if (isRu) {
+      steps.push(`Знаменатели дробей: [${denList}]. Находим наименьшее общее кратное (НОК): НОК = ${commonDenom}.`);
+    } else {
+      steps.push(`Denominadores de las fracciones: [${denList}]. Calculamos el Mínimo Común Múltiplo (MCM): MCM = ${commonDenom}.`);
+    }
+
+    // Step 2: Convert fractions to common denominator
+    const expansions = fractions.map(f => {
+      const mult = commonDenom / f.den;
+      const newNum = f.num * mult;
+      return `${f.num}/${f.den} = (${f.num} × ${mult})/(${f.den} × ${mult}) = ${newNum}/${commonDenom}`;
+    });
+    if (isRu) {
+      steps.push(`Приводим все дроби к общему знаменателю ${commonDenom}:\n${expansions.join('  •  ')}`);
+    } else {
+      steps.push(`Ampliamos cada fracción al denominador común ${commonDenom}:\n${expansions.join('  •  ')}`);
+    }
+
+    // Step 3: Operate on numerators
+    let totalNum = fractions[0].num * (commonDenom / fractions[0].den);
+    let exprStr = `${totalNum}`;
+    for (let i = 1; i < fractions.length; i++) {
+      const op = ops[i - 1] || '+';
+      const termNum = fractions[i].num * (commonDenom / fractions[i].den);
+      if (op === '+') {
+        totalNum += termNum;
+        exprStr += ` + ${termNum}`;
+      } else {
+        totalNum -= termNum;
+        exprStr += ` - ${termNum}`;
+      }
+    }
+
+    if (isRu) {
+      steps.push(`Выполняем действия с новыми числителями: (${exprStr}) / ${commonDenom} = ${totalNum}/${commonDenom}.`);
+    } else {
+      steps.push(`Operamos los numeradores sobre el común denominador: (${exprStr}) / ${commonDenom} = ${totalNum}/${commonDenom}.`);
+    }
+
+    // Step 4: Simplify result
+    const raw = { num: totalNum, den: commonDenom };
+    const simp = simplifyFraction(raw);
+    const div = gcd(raw.num, raw.den);
+    if (div > 1) {
+      if (isRu) {
+        steps.push(`Сокращаем числитель и знаменатель на ${div}: ${simp.num}/${simp.den}.`);
+      } else {
+        steps.push(`Simplificamos dividiendo numerador y denominador entre ${div}: ${simp.num}/${simp.den}.`);
+      }
+    } else {
+      if (isRu) {
+        steps.push(`Дробь ${simp.num}/${simp.den} уже несократима.`);
+      } else {
+        steps.push(`La fracción ${simp.num}/${simp.den} ya se encuentra en su mínima expresión.`);
+      }
+    }
+
+    return { result: simp, steps };
+  } else {
+    // Sequential progressive evaluation
+    let current = fractions[0];
+    if (isRu) {
+      steps.push(`Последовательное вычисление выражения с учетом порядка операций:`);
+    } else {
+      steps.push(`Resolución progresiva de la expresión combinada paso a paso:`);
+    }
+
+    for (let i = 1; i < fractions.length; i++) {
+      const currentOp = ops[i - 1] || '+';
+      const opSymbol = currentOp === '*' ? '×' : currentOp === '/' ? '÷' : currentOp === '-' ? '−' : '+';
+      const stepRes = solveOperation(current, fractions[i], currentOp, lang);
+      if (isRu) {
+        steps.push(`Действие ${i}: (${current.num}/${current.den} ${opSymbol} ${fractions[i].num}/${fractions[i].den}) = ${stepRes.result.num}/${stepRes.result.den}`);
+      } else {
+        steps.push(`Paso ${i}: Calculamos (${current.num}/${current.den} ${opSymbol} ${fractions[i].num}/${fractions[i].den}) = ${stepRes.result.num}/${stepRes.result.den}`);
+      }
+      current = stepRes.result;
+    }
+
+    return { result: current, steps };
+  }
+}
+

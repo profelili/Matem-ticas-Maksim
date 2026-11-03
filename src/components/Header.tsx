@@ -37,12 +37,11 @@ export const Header: React.FC<HeaderProps> = ({
   const avatarObj = AVATARS.find(a => a.id === profile.avatar) || AVATARS[0];
 
   const navItems = [
+    { id: 'laboratorio', label: t.navLab },
     { id: 'aventura', label: t.navAdventure },
     { id: 'contrarrelj', label: t.navTimeAttack },
-    { id: 'laboratorio', label: t.navLab },
     { id: 'errores', label: t.navMistakes },
     { id: 'estadisticas', label: t.navStats },
-    { id: 'clasificacion', label: t.navLeaderboard },
     { id: 'logros', label: t.navAchievements },
   ];
 
@@ -51,7 +50,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-6 sm:gap-8">
         {/* Zone 1: Brand Wordmark (Single text element) */}
         <button
-          onClick={() => onTabChange('aventura')}
+          onClick={() => onTabChange('laboratorio')}
           className="text-lg sm:text-xl font-extrabold tracking-tight text-indigo-600 dark:text-indigo-400 whitespace-nowrap shrink-0 flex items-center gap-2 hover:opacity-90 transition-opacity"
         >
           <span className="text-2xl">🍕</span>

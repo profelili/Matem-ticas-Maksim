@@ -63,7 +63,7 @@ export default function App() {
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
   // Navigation tab
-  const [currentTab, setCurrentTab] = useState<string>('aventura');
+  const [currentTab, setCurrentTab] = useState<string>('laboratorio');
 
   // Network & Sync
   const { isOnline, isSyncing, justSyncedCount, manualSync } = useOnlineStatus();

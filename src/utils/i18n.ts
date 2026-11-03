@@ -124,6 +124,15 @@ export interface Translations {
   fraction1: string;
   fraction2: string;
   printOrSave: string;
+  addFractionBtn: string;
+  removeFractionBtn: string;
+  fractionN: string;
+  maxFractionsReached: string;
+  saveCustomPreset: string;
+  customPresetSaved: string;
+  multiCommonDenomStep: string;
+  multiExpansionStep: string;
+  multiCombineStep: string;
 
   // Mistakes View
   mistakesTitle: string;
@@ -336,6 +345,15 @@ export const translations: Record<Language, Translations> = {
     fraction1: 'Fracción 1',
     fraction2: 'Fracción 2',
     printOrSave: 'Imprimir resumen o guardar en PDF',
+    addFractionBtn: '+ Agregar Fracción',
+    removeFractionBtn: 'Eliminar fracción',
+    fractionN: 'Fracción',
+    maxFractionsReached: 'Máximo de 5 fracciones alcanzado',
+    saveCustomPreset: 'Guardar como ejemplo rápido',
+    customPresetSaved: '¡Fracción guardada en ejemplos!',
+    multiCommonDenomStep: 'Calculamos el Mínimo Común Múltiplo (MCM) de todos los denominadores',
+    multiExpansionStep: 'Convertimos cada fracción al denominador común',
+    multiCombineStep: 'Realizamos las operaciones con los nuevos numeradores',
 
     mistakesTitle: 'Cuaderno de Repaso y Errores',
     mistakesDesc: 'Cada error es una oportunidad de aprendizaje. Revisa tus fallos anteriores, comprende el porqué con gráficos interactivos y vuélvelos a intentar.',
@@ -539,6 +557,15 @@ export const translations: Record<Language, Translations> = {
     fraction1: 'Дробь 1',
     fraction2: 'Дробь 2',
     printOrSave: 'Печать / Сохранить в PDF',
+    addFractionBtn: '+ Добавить дробь',
+    removeFractionBtn: 'Удалить дробь',
+    fractionN: 'Дробь',
+    maxFractionsReached: 'Достигнут максимум из 5 дробей',
+    saveCustomPreset: 'Сохранить как пример',
+    customPresetSaved: 'Пример сохранен в список!',
+    multiCommonDenomStep: 'Находим наименьшее общее кратное (НОК) для всех знаменателей',
+    multiExpansionStep: 'Приводим каждую дробь к общему знаменателю',
+    multiCombineStep: 'Выполняем действия с новыми числителями',
 
     mistakesTitle: 'Тетрадь работы над ошибками',
     mistakesDesc: 'Каждая ошибка — ступень к мастерству. Разберите свои неточности с наглядными моделями и решите их повторно.',
