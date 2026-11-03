@@ -113,6 +113,26 @@ export const AVATARS = [
   { id: 'bear', name: 'Oso Analítico', emoji: '🐻', color: 'from-emerald-500 to-teal-600' },
 ];
 
+export function createEmptyStats(): UserStats {
+  const today = new Date().toISOString().split('T')[0];
+  return {
+    totalSolved: 0,
+    totalCorrect: 0,
+    byOperation: {
+      '+': { attempted: 0, correct: 0 },
+      '-': { attempted: 0, correct: 0 },
+      '*': { attempted: 0, correct: 0 },
+      '/': { attempted: 0, correct: 0 },
+    },
+    streak: 0,
+    bestStreak: 0,
+    highScoreTimeAttack: 0,
+    dailyStreakDays: 1,
+    lastPlayedDate: today,
+    historyScores: [],
+  };
+}
+
 export function createInitialStats(): UserStats {
   const today = new Date().toISOString().split('T')[0];
   return {
@@ -141,19 +161,47 @@ export function createInitialStats(): UserStats {
   };
 }
 
-export function createDefaultProfile(name = 'Estudiante', avatar = 'owl'): UserProfile {
+export function createNewStudentProfile(name = 'Estudiante', avatar = 'owl'): UserProfile {
   return {
     id: `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
     name,
     avatar,
-    level: 3,
-    xp: 340,
-    stars: 18,
-    unlockedLevel: 5,
-    stats: createInitialStats(),
-    achievements: ['first_win', 'streak_5'],
+    level: 1,
+    xp: 0,
+    stars: 0,
+    unlockedLevel: 1,
+    stats: createEmptyStats(),
+    achievements: [],
     createdAt: Date.now(),
   };
+}
+
+export function createDefaultProfile(name = 'Estudiante', avatar = 'owl'): UserProfile {
+  return createNewStudentProfile(name, avatar);
+}
+
+export function resetProfileStats(profileId: string): UserProfile {
+  const profiles = loadProfiles();
+  const idx = profiles.findIndex(p => p.id === profileId);
+  const target = idx !== -1 ? profiles[idx] : getCurrentProfile();
+
+  const resetProfile: UserProfile = {
+    ...target,
+    level: 1,
+    xp: 0,
+    stars: 0,
+    unlockedLevel: 1,
+    stats: createEmptyStats(),
+    achievements: [],
+  };
+
+  if (idx !== -1) {
+    profiles[idx] = resetProfile;
+    saveProfiles(profiles);
+  }
+
+  clearMistakesForUser(profileId);
+  return resetProfile;
 }
 
 export function loadProfiles(): UserProfile[] {
@@ -167,18 +215,11 @@ export function loadProfiles(): UserProfile[] {
     console.error('Error loading profiles from localStorage', err);
   }
 
-  // Initial demo profiles if none exist
-  const defaultProfile = createDefaultProfile('Mateo Matemático', 'owl');
-  const secondProfile = {
-    ...createDefaultProfile('Sofía Explorer', 'astronaut'),
-    level: 4,
-    xp: 520,
-    stars: 24,
-    unlockedLevel: 7,
-  };
-  saveProfiles([defaultProfile, secondProfile]);
+  // Initial demo profile with clean starting stats
+  const defaultProfile = createNewStudentProfile('Mateo Matemático', 'owl');
+  saveProfiles([defaultProfile]);
   localStorage.setItem(STORAGE_KEYS.CURRENT_USER_ID, defaultProfile.id);
-  return [defaultProfile, secondProfile];
+  return [defaultProfile];
 }
 
 export function saveProfiles(profiles: UserProfile[]) {
@@ -240,62 +281,20 @@ export function loadMistakes(userId?: string): MistakeRecord[] {
     console.error('Error loading mistakes', e);
   }
 
-  // Seed sample initial mistakes for educational review demonstration
-  if (userId) {
-    const seeded: MistakeRecord[] = [
-      {
-        id: 'seed_mistake_1',
-        timestamp: Date.now() - 3600000 * 24,
-        userId,
-        problem: {
-          id: 'seed_prob_1',
-          f1: { num: 1, den: 2 },
-          f2: { num: 1, den: 3 },
-          operation: '+',
-          difficulty: 'intermedio',
-          correctAnswer: { num: 5, den: 6 },
-          options: [{ num: 5, den: 6 }, { num: 2, den: 5 }, { num: 2, den: 6 }, { num: 1, den: 6 }],
-          stepByStep: [
-            'Denominadores distintos (2 y 3). El MCM es 6.',
-            'Ampliamos: (1×3)/(2×3) = 3/6 y (1×2)/(3×2) = 2/6.',
-            'Sumamos numeradores: 3 + 2 = 5/6.',
-          ],
-          conceptExplanation: 'Error común: se sumaron numeradores y denominadores directamente (1+1)/(2+3)=2/5 en lugar de buscar el MCM.',
-          visualType: 'circle',
-        },
-        userAnswer: { num: 2, den: 5 },
-        solvedAgain: false,
-        notes: 'Recordar: ¡Nunca sumar denominadores directamente!',
-      },
-      {
-        id: 'seed_mistake_2',
-        timestamp: Date.now() - 3600000 * 12,
-        userId,
-        problem: {
-          id: 'seed_prob_2',
-          f1: { num: 3, den: 4 },
-          f2: { num: 2, den: 5 },
-          operation: '*',
-          difficulty: 'intermedio',
-          correctAnswer: { num: 3, den: 10 },
-          options: [{ num: 3, den: 10 }, { num: 6, den: 20 }, { num: 15, den: 8 }, { num: 5, den: 9 }],
-          stepByStep: [
-            'Multiplicación directa: (3 × 2) / (4 × 5) = 6/20.',
-            'Simplificamos dividiendo ambos por 2: 3/10.',
-          ],
-          conceptExplanation: 'Faltó simplificar el resultado final dividiendo entre 2.',
-          visualType: 'bar',
-        },
-        userAnswer: { num: 6, den: 20 },
-        solvedAgain: false,
-        notes: 'La respuesta era correcta matemáticamente pero no estaba en su forma irreducible.',
-      },
-    ];
-    saveMistakes(seeded);
-    return seeded;
-  }
-
   return [];
+}
+
+export function clearMistakesForUser(userId: string) {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEYS.MISTAKES);
+    if (raw) {
+      const parsed = JSON.parse(raw) as MistakeRecord[];
+      const filtered = parsed.filter(m => m.userId !== userId);
+      localStorage.setItem(STORAGE_KEYS.MISTAKES, JSON.stringify(filtered));
+    }
+  } catch (e) {
+    console.error('Error clearing mistakes for user', e);
+  }
 }
 
 export function saveMistakes(mistakes: MistakeRecord[]) {

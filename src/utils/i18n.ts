@@ -169,6 +169,9 @@ export interface Translations {
   evolutionTitle: string;
   evolutionSubtitle: string;
   radarTitle: string;
+  noHistoryYet: string;
+  noHistoryDesc: string;
+  untestedSkill: string;
 
   // Leaderboard View
   leaderboardTitle: string;
@@ -202,6 +205,9 @@ export interface Translations {
   createProfileBtn: string;
   activeProfile: string;
   addNewStudent: string;
+  newProfileZeroStatsNote: string;
+  resetStatsBtn: string;
+  resetStatsConfirm: string;
 
   // Reminder Modal
   reminderTitle: string;
@@ -386,8 +392,11 @@ export const translations: Record<Language, Translations> = {
     tabRadar: 'Radar de Habilidades',
     opBreakdownTitle: 'Desglose de Rendimiento por Tipo de Operación',
     evolutionTitle: 'Evolución de Puntajes y Precisión por Sesión',
-    evolutionSubtitle: 'Últimas 7 sesiones registradas',
+    evolutionSubtitle: 'Últimas sesiones registradas',
     radarTitle: 'Medidor de Dominio de Competencias',
+    noHistoryYet: 'Aún no hay partidas registradas',
+    noHistoryDesc: 'Juega en Aventura o Contrarreloj para ver reflejada tu evolución gráfica y puntajes.',
+    untestedSkill: 'Sin evaluar',
 
     leaderboardTitle: 'Tablero de Clasificación Global',
     leaderboardDesc: 'Compara tus marcas de velocidad, estrellas y rachas con la comunidad de estudiantes.',
@@ -418,6 +427,9 @@ export const translations: Record<Language, Translations> = {
     createProfileBtn: 'Crear Perfil',
     activeProfile: 'Activo',
     addNewStudent: 'Añadir Nuevo Alumno',
+    newProfileZeroStatsNote: 'El nuevo estudiante comenzará con estadísticas, historial y nivel desde cero.',
+    resetStatsBtn: 'Reiniciar Estadísticas',
+    resetStatsConfirm: '¿Deseas reiniciar todas las estadísticas y el historial de este estudiante a cero?',
 
     reminderTitle: 'Recordatorios Diarios',
     reminderDesc: 'Notificaciones push para estudiar y no perder tu racha.',
@@ -598,8 +610,11 @@ export const translations: Record<Language, Translations> = {
     tabRadar: 'Радар навыков',
     opBreakdownTitle: 'Анализ точности по видам математических операций',
     evolutionTitle: 'История результатов и точности по сессиям',
-    evolutionSubtitle: 'Последние 7 сохраненных тренировок',
+    evolutionSubtitle: 'Последние сохраненные тренировки',
     radarTitle: 'Уровень владения математическими навыками',
+    noHistoryYet: 'Пока нет сыгранных раундов',
+    noHistoryDesc: 'Играйте в Приключениях или Испытании на время, чтобы увидеть динамику прогресса.',
+    untestedSkill: 'Нет данных',
 
     leaderboardTitle: 'Глобальная таблица лидеров',
     leaderboardDesc: 'Сравнивайте результаты скорости, заработанные звезды и серии с другими учениками.',
@@ -630,6 +645,9 @@ export const translations: Record<Language, Translations> = {
     createProfileBtn: 'Создать профиль',
     activeProfile: 'Активный',
     addNewStudent: 'Добавить ученика',
+    newProfileZeroStatsNote: 'Новый профиль учащегося начнется с нулевой статистикой и историей.',
+    resetStatsBtn: 'Сбросить статистику',
+    resetStatsConfirm: 'Сбросить всю статистику и историю этого учащегося до нуля?',
 
     reminderTitle: 'Ежедневные напоминания',
     reminderDesc: 'Push-уведомления, чтобы не пропускать занятия и сохранять серию.',

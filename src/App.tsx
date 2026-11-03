@@ -7,6 +7,8 @@ import {
   updateCurrentProfile,
   setCurrentProfileId,
   createDefaultProfile,
+  createNewStudentProfile,
+  resetProfileStats,
   loadMistakes,
   addMistake,
   markMistakeSolved,
@@ -150,13 +152,33 @@ export default function App() {
   };
 
   const handleCreateProfile = (name: string, avatar: string) => {
-    const newProf = createDefaultProfile(name, avatar);
+    const newProf = createNewStudentProfile(name, avatar);
     const updatedProfiles = [...profiles, newProf];
     saveProfiles(updatedProfiles);
     setProfiles(updatedProfiles);
     setCurrentProfileId(newProf.id);
     setCurrentProfile(newProf);
-    setMistakes(loadMistakes(newProf.id));
+    setMistakes([]);
+    setIsProfileModalOpen(false);
+    showToast(
+      lang === 'ru'
+        ? `Профиль "${name}" создан с чистой статистикой!`
+        : `¡Perfil de "${name}" creado con estadísticas desde cero!`
+    );
+  };
+
+  const handleResetProfileStats = (id: string) => {
+    const updated = resetProfileStats(id);
+    setProfiles(loadProfiles());
+    if (currentProfile.id === id) {
+      setCurrentProfile(updated);
+      setMistakes([]);
+    }
+    showToast(
+      lang === 'ru'
+        ? 'Статистика учащегося успешно сброшена до нуля.'
+        : 'Estadísticas del estudiante reiniciadas a cero.'
+    );
   };
 
   const handleUpdateProfile = (name: string, avatar: string) => {
@@ -413,6 +435,7 @@ export default function App() {
           onSelectProfile={handleSelectProfile}
           onCreateProfile={handleCreateProfile}
           onUpdateProfile={handleUpdateProfile}
+          onResetStats={handleResetProfileStats}
           onClose={() => setIsProfileModalOpen(false)}
           t={t}
         />

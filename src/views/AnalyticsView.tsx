@@ -29,18 +29,39 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ profile, t, lang }
     return accA - accB;
   })[0];
 
+  const isNewStudent = stats.totalSolved === 0;
+
+  const addSubAttempted = (stats.byOperation['+']?.attempted || 0) + (stats.byOperation['-']?.attempted || 0);
+  const addSubCorrect = (stats.byOperation['+']?.correct || 0) + (stats.byOperation['-']?.correct || 0);
+  const addSubAcc = addSubAttempted > 0 ? Math.round((addSubCorrect / addSubAttempted) * 100) : 0;
+
+  const mulDivAttempted = (stats.byOperation['*']?.attempted || 0) + (stats.byOperation['/']?.attempted || 0);
+  const mulDivCorrect = (stats.byOperation['*']?.correct || 0) + (stats.byOperation['/']?.correct || 0);
+  const mulDivAcc = mulDivAttempted > 0 ? Math.round((mulDivCorrect / mulDivAttempted) * 100) : 0;
+
+  const speedRate = Math.min(100, Math.round((stats.highScoreTimeAttack / 350) * 100));
+  const streakRate = Math.min(100, stats.bestStreak * 12);
+
+  const getGrade = (val: number) => {
+    if (val === 0) return { grade: t.untestedSkill, color: 'text-slate-400' };
+    if (val >= 90) return { grade: lang === 'ru' ? 'Эксперт' : 'Experto', color: 'text-purple-500' };
+    if (val >= 75) return { grade: lang === 'ru' ? 'Продвинутый' : 'Avanzado', color: 'text-emerald-500' };
+    if (val >= 50) return { grade: lang === 'ru' ? 'Освоено' : 'Dominado', color: 'text-indigo-500' };
+    return { grade: lang === 'ru' ? 'В развитии' : 'En desarrollo', color: 'text-amber-500' };
+  };
+
   const radarSkills = lang === 'ru' ? [
-    { name: 'Несократимые дроби', level: '85%', grade: 'Продвинутый', color: 'text-emerald-500' },
-    { name: 'Поиск НОК и знаменателя', level: '80%', grade: 'Освоено', color: 'text-indigo-500' },
-    { name: 'Умножение и деление', level: '90%', grade: 'Эксперт', color: 'text-purple-500' },
-    { name: 'Смешанные дроби', level: '75%', grade: 'Средний', color: 'text-amber-500' },
-    { name: 'Скорость устного счета', level: '70%', grade: 'Развивается', color: 'text-sky-500' },
+    { name: 'Поиск НОК и знаменателя', level: `${addSubAcc}%`, ...getGrade(addSubAcc) },
+    { name: 'Умножение и деление', level: `${mulDivAcc}%`, ...getGrade(mulDivAcc) },
+    { name: 'Общая точность', level: `${overallAccuracy}%`, ...getGrade(overallAccuracy) },
+    { name: 'Скорость счета', level: `${speedRate}%`, ...getGrade(speedRate) },
+    { name: 'Удержание серии', level: `${streakRate}%`, ...getGrade(streakRate) },
   ] : [
-    { name: 'Simplificación Irreducible', level: '85%', grade: 'Avanzado', color: 'text-emerald-500' },
-    { name: 'Cálculo de MCM / Homogenización', level: '80%', grade: 'Dominado', color: 'text-indigo-500' },
-    { name: 'Multiplicación y División Inversa', level: '90%', grade: 'Experto', color: 'text-purple-500' },
-    { name: 'Fracciones Impropias y Mixtas', level: '75%', grade: 'Intermedio', color: 'text-amber-500' },
-    { name: 'Velocidad de Respuesta Mental', level: '70%', grade: 'En desarrollo', color: 'text-sky-500' },
+    { name: 'Cálculo de MCM / Homogenización', level: `${addSubAcc}%`, ...getGrade(addSubAcc) },
+    { name: 'Multiplicación y División Inversa', level: `${mulDivAcc}%`, ...getGrade(mulDivAcc) },
+    { name: 'Precisión Global y Reducción', level: `${overallAccuracy}%`, ...getGrade(overallAccuracy) },
+    { name: 'Velocidad de Respuesta Mental', level: `${speedRate}%`, ...getGrade(speedRate) },
+    { name: 'Consistencia y Rachas', level: `${streakRate}%`, ...getGrade(streakRate) },
   ];
 
   return (
@@ -108,7 +129,23 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ profile, t, lang }
       </div>
 
       {/* Smart Personalized Advice Callout */}
-      {weakestOp && weakestOp.data.attempted > 0 && (
+      {isNewStudent ? (
+        <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">✨</span>
+            <div>
+              <strong className="text-slate-900 dark:text-white font-bold block">
+                {lang === 'ru' ? 'Новый профиль учащегося' : 'Nuevo perfil de estudiante'}
+              </strong>
+              <span className="text-slate-600 dark:text-slate-300">
+                {lang === 'ru'
+                  ? 'Статистика сброшена и начнется с нуля. Решайте примеры в Лаборатории или начните миссию в Приключениях!'
+                  : 'Estadísticas reiniciadas desde cero. ¡Comienza a resolver en el Laboratorio o supera misiones en Aventura para registrar tu avance!'}
+              </span>
+            </div>
+          </div>
+        </div>
+      ) : weakestOp && weakestOp.data.attempted > 0 ? (
         <div className="p-4 rounded-2xl bg-indigo-50/70 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs sm:text-sm">
           <div className="flex items-center gap-3">
             <span className="text-2xl">💡</span>
@@ -123,7 +160,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ profile, t, lang }
             </div>
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Chart Selector Tab */}
       <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-semibold w-fit">
@@ -223,77 +260,91 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ profile, t, lang }
             <span className="text-xs text-slate-400 font-medium">{t.evolutionSubtitle}</span>
           </div>
 
-          <div className="w-full h-64 sm:h-72 relative">
-            <svg viewBox="0 0 700 240" className="w-full h-full overflow-visible">
-              {[0, 60, 120, 180].map((y, idx) => (
-                <line
-                  key={idx}
-                  x1="40"
-                  y1={y + 20}
-                  x2={680}
-                  y2={y + 20}
-                  stroke="currentColor"
-                  className="text-slate-200 dark:text-slate-800"
-                  strokeDasharray="4 4"
-                  strokeWidth="1"
-                />
-              ))}
+          {stats.historyScores.length === 0 ? (
+            <div className="py-16 text-center space-y-3">
+              <div className="w-14 h-14 mx-auto rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center text-2xl shadow-xs">
+                📈
+              </div>
+              <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                {t.noHistoryYet}
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto leading-relaxed">
+                {t.noHistoryDesc}
+              </p>
+            </div>
+          ) : (
+            <div className="w-full h-64 sm:h-72 relative">
+              <svg viewBox="0 0 700 240" className="w-full h-full overflow-visible">
+                {[0, 60, 120, 180].map((y, idx) => (
+                  <line
+                    key={idx}
+                    x1="40"
+                    y1={y + 20}
+                    x2={680}
+                    y2={y + 20}
+                    stroke="currentColor"
+                    className="text-slate-200 dark:text-slate-800"
+                    strokeDasharray="4 4"
+                    strokeWidth="1"
+                  />
+                ))}
 
-              {stats.historyScores.map((h, i) => {
-                const x = 70 + i * 95;
-                const maxScore = 600;
-                const scoreH = (h.score / maxScore) * 160;
-                const y = 200 - scoreH;
+                {stats.historyScores.map((h, i) => {
+                  const x = 70 + i * 95;
+                  const maxScore = 600;
+                  const scoreH = (h.score / maxScore) * 160;
+                  const y = 200 - scoreH;
 
-                return (
-                  <g key={i} className="group cursor-pointer">
-                    <rect
-                      x={x - 16}
-                      y={y}
-                      width="32"
-                      height={scoreH}
-                      rx="6"
-                      className="fill-indigo-500/20 hover:fill-indigo-500/40 transition-colors"
-                    />
+                  return (
+                    <g key={i} className="group cursor-pointer">
+                      <rect
+                        x={x - 16}
+                        y={y}
+                        width="32"
+                        height={scoreH}
+                        rx="6"
+                        className="fill-indigo-500/20 hover:fill-indigo-500/40 transition-colors"
+                      />
 
-                    <circle
-                      cx={x}
-                      cy={y}
-                      r="5"
-                      className="fill-indigo-600 dark:fill-indigo-400 stroke-white dark:stroke-slate-900 stroke-2"
-                    />
+                      <circle
+                        cx={x}
+                        cy={y}
+                        r="5"
+                        className="fill-indigo-600 dark:fill-indigo-400 stroke-white dark:stroke-slate-900 stroke-2"
+                      />
 
-                    <text
-                      x={x}
-                      y={y - 8}
-                      textAnchor="middle"
-                      className="text-[11px] font-bold fill-slate-700 dark:fill-slate-300 tabular-nums"
-                    >
-                      {h.score}
-                    </text>
+                      <text
+                        x={x}
+                        y={y - 8}
+                        textAnchor="middle"
+                        className="text-[11px] font-bold fill-slate-700 dark:fill-slate-300 tabular-nums"
+                      >
+                        {h.score}
+                      </text>
 
-                    <text
-                      x={x}
-                      y="225"
-                      textAnchor="middle"
-                      className="text-[11px] font-medium fill-slate-400"
-                    >
-                      {h.date}
-                    </text>
+                      <text
+                        x={x}
+                        y="225"
+                        textAnchor="middle"
+                        className="text-[11px] font-medium fill-slate-400"
+                      >
+                        {h.date}
+                      </text>
 
-                    <text
-                      x={x}
-                      y="238"
-                      textAnchor="middle"
-                      className="text-[10px] font-bold fill-emerald-600 dark:fill-emerald-400 tabular-nums"
-                    >
-                      {h.accuracy}%
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
-          </div>
+                      <text
+                        x={x}
+                        y="238"
+                        textAnchor="middle"
+                        className="text-[10px] font-bold fill-emerald-600 dark:fill-emerald-400 tabular-nums"
+                      >
+                        {h.accuracy}%
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          )}
         </div>
       )}
 
@@ -339,7 +390,20 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ profile, t, lang }
                 })}
 
                 <polygon
-                  points="130,45 210,105 185,195 75,195 50,105"
+                  points={(() => {
+                    const angles = [0, 72, 144, 216, 288];
+                    const rates = [addSubAcc, mulDivAcc, overallAccuracy, speedRate, streakRate];
+                    return angles
+                      .map((angle, idx) => {
+                        const val = isNewStudent ? 15 : Math.max(15, rates[idx]);
+                        const rad = ((angle - 90) * Math.PI) / 180;
+                        const r = (val / 100) * 100;
+                        const px = Math.round(130 + r * Math.cos(rad));
+                        const py = Math.round(130 + r * Math.sin(rad));
+                        return `${px},${py}`;
+                      })
+                      .join(' ');
+                  })()}
                   className="fill-indigo-500/30 stroke-indigo-600 dark:stroke-indigo-400"
                   strokeWidth="2"
                 />
