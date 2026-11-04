@@ -4,6 +4,7 @@ import { DifficultyLevel, Operation, Problem, UserProfile } from '../types/fract
 import { generateProblem } from '../utils/mathEngine';
 import { sounds } from '../utils/soundEffects';
 import { Language, Translations } from '../utils/i18n';
+import heroGameImg from '../assets/images/fractions_game_hero_1793730820777.jpg';
 
 interface AdventureViewProps {
   profile: UserProfile;
@@ -72,7 +73,7 @@ export const AdventureView: React.FC<AdventureViewProps> = ({
       <div className="relative rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-900 shadow-xl">
         <div className="absolute inset-0">
           <img
-            src="/src/assets/images/fractions_game_hero_1793730820777.jpg"
+            src={heroGameImg}
             alt={t.heroTitle}
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover opacity-40 dark:opacity-35"

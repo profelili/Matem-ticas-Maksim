@@ -3,6 +3,7 @@ import { Award, Lock, CheckCircle2, Sparkles, Trophy } from 'lucide-react';
 import { UserProfile } from '../types/fractions';
 import { INITIAL_ACHIEVEMENTS, AVATARS } from '../utils/storage';
 import { Language, Translations } from '../utils/i18n';
+import badgeMathMaster from '../assets/images/badge_math_master_1793730820590.jpg';
 
 interface AchievementsViewProps {
   profile: UserProfile;
@@ -41,7 +42,7 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({ profile, t, 
       <div className="bg-gradient-to-br from-indigo-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 border border-indigo-500/30 shadow-xl flex flex-col md:flex-row items-center gap-6 sm:gap-8">
         <div className="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl overflow-hidden shrink-0 border-2 border-amber-400/40 shadow-lg relative bg-slate-800">
           <img
-            src="/src/assets/images/badge_math_master_1793730820590.jpg"
+            src={badgeMathMaster}
             alt="Mastery Badge"
             referrerPolicy="no-referrer"
             className="w-full h-full object-cover"
