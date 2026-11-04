@@ -32,7 +32,15 @@ body {
 
 /* Mobile Touch & Safe Area Utilities */
 .safe-area-pb {
-  padding-bottom: max(0.5rem, env(safe-area-inset-bottom, 0.5rem));
+  padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 0.6rem));
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 html, body {

@@ -387,7 +387,7 @@ export default function App() {
       />
 
       {/* Main Content Body */}
-      <main className="flex-1 pb-24 lg:pb-16">
+      <main className="flex-1 pb-32 sm:pb-28 lg:pb-16">
         {currentTab === 'aventura' && (
           <AdventureView
             profile={currentProfile}
