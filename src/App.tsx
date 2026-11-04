@@ -499,7 +499,7 @@ export default function App() {
             <span>{t.appName} · {lang === 'ru' ? 'Образовательная платформа по математике' : 'Plataforma Educativa Gamificada de Matemáticas'}</span>
             <span className="opacity-60">·</span>
             <span className="font-medium text-slate-700 dark:text-slate-300">
-              {lang === 'ru' ? 'Преподаватель' : 'Docente'}: Liliana Alvarez - Mg Domi1
+              © 2026 Prof. Liliana Alvarez. Mg. Domi 1- Todos los derechos reservados.-
             </span>
           </span>
           <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">

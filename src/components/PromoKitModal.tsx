@@ -25,7 +25,7 @@ export const PromoKitModal: React.FC<PromoKitModalProps> = ({
   const promoTexts = lang === 'ru' ? [
     {
       title: 'Для мессенджеров и соцсетей (кратко)',
-      text: '🚀 Откройте для себя FraccionaMente! Интерактивная платформа для освоения дробей с геймификацией, визуальной лабораторией и рекордами. 🍕➗ Разработано преподавателем: Liliana Alvarez - Mg Domi1. Попробуйте прямо сейчас!',
+      text: '🚀 Откройте для себя FraccionaMente! Интерактивная платформа для освоения дробей с геймификацией, визуальной лабораторией и рекордами. 🍕➗ © 2026 Prof. Liliana Alvarez. Mg. Domi 1- Todos los derechos reservados.- Попробуйте прямо сейчас!',
     },
     {
       title: 'Для школьного объявления / родителей',
@@ -38,7 +38,7 @@ export const PromoKitModal: React.FC<PromoKitModalProps> = ({
   ] : [
     {
       title: 'Para WhatsApp y redes sociales (corto)',
-      text: '🚀 ¡Descubre FraccionaMente! La plataforma interactiva y gamificada para dominar las fracciones con laboratorio visual, retos y recompensas. 🍕➗ Docente: Liliana Alvarez - Mg Domi1. ¡Aprende jugando!',
+      text: '🚀 ¡Descubre FraccionaMente! La plataforma interactiva y gamificada para dominar las fracciones con laboratorio visual, retos y recompensas. 🍕➗ © 2026 Prof. Liliana Alvarez. Mg. Domi 1- Todos los derechos reservados.- ¡Aprende jugando!',
     },
     {
       title: 'Para comunicado escolar / padres de familia',
@@ -142,7 +142,9 @@ export const PromoKitModal: React.FC<PromoKitModalProps> = ({
                   <span className="text-slate-400 block text-[10px] uppercase font-bold tracking-wider">
                     {lang === 'ru' ? 'Преподаватель' : 'Docente Responsable'}
                   </span>
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">Liliana Alvarez - Mg Domi1</span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">
+                    © 2026 Prof. Liliana Alvarez. Mg. Domi 1- Todos los derechos reservados.-
+                  </span>
                 </div>
               </div>
 
