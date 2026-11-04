@@ -218,12 +218,12 @@ export const LabVisualizerView: React.FC<LabVisualizerViewProps> = ({ t, lang })
       </div>
 
       {/* Interactive Multi-Fraction Workspace */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm">
-        <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 sm:p-8 shadow-sm">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
           {fractions.map((frac, idx) => (
             <React.Fragment key={idx}>
               {/* Fraction Term Box */}
-              <div className="relative flex flex-col items-center bg-slate-50 dark:bg-slate-800/60 p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 min-w-[125px] shadow-xs group">
+              <div className="relative flex flex-col items-center bg-slate-50 dark:bg-slate-800/60 p-3 sm:p-4 rounded-2xl border border-slate-200 dark:border-slate-700/80 min-w-[120px] sm:min-w-[125px] shadow-xs group">
                 {/* Fraction Index & Delete Button */}
                 <div className="w-full flex items-center justify-between mb-2">
                   <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400">
@@ -232,19 +232,20 @@ export const LabVisualizerView: React.FC<LabVisualizerViewProps> = ({ t, lang })
                   {fractions.length > 2 && (
                     <button
                       onClick={() => handleRemoveFraction(idx)}
-                      className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition p-1 -mr-1 rounded-md"
+                      className="text-slate-400 hover:text-red-500 dark:hover:text-red-400 transition p-1.5 -mr-1.5 rounded-lg active:scale-95"
                       title={t.removeFractionBtn}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   )}
                 </div>
 
                 {/* Numerator Input & Mini Steppers */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleUpdateFraction(idx, 'num', frac.num - 1)}
-                    className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center transition"
+                    className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-sm font-black flex items-center justify-center transition active:scale-95 touch-manipulation"
+                    aria-label="Disminuir numerador"
                   >
                     −
                   </button>
@@ -254,23 +255,25 @@ export const LabVisualizerView: React.FC<LabVisualizerViewProps> = ({ t, lang })
                     max="20"
                     value={frac.num}
                     onChange={e => handleUpdateFraction(idx, 'num', parseInt(e.target.value) || 0)}
-                    className="w-14 text-center text-2xl font-black rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 py-1"
+                    className="w-12 sm:w-14 text-center text-xl sm:text-2xl font-black rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 py-1"
                   />
                   <button
                     onClick={() => handleUpdateFraction(idx, 'num', frac.num + 1)}
-                    className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center transition"
+                    className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-sm font-black flex items-center justify-center transition active:scale-95 touch-manipulation"
+                    aria-label="Aumentar numerador"
                   >
                     +
                   </button>
                 </div>
 
-                <div className="w-full h-1 bg-slate-700 dark:bg-slate-300 my-2 rounded-full" />
+                <div className="w-full h-1 bg-slate-700 dark:bg-slate-300 my-2.5 rounded-full" />
 
                 {/* Denominator Input & Mini Steppers */}
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-2">
                   <button
                     onClick={() => handleUpdateFraction(idx, 'den', frac.den - 1)}
-                    className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center transition"
+                    className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-sm font-black flex items-center justify-center transition active:scale-95 touch-manipulation"
+                    aria-label="Disminuir denominador"
                   >
                     −
                   </button>
@@ -280,11 +283,12 @@ export const LabVisualizerView: React.FC<LabVisualizerViewProps> = ({ t, lang })
                     max="20"
                     value={frac.den}
                     onChange={e => handleUpdateFraction(idx, 'den', parseInt(e.target.value) || 1)}
-                    className="w-14 text-center text-2xl font-black rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 py-1"
+                    className="w-12 sm:w-14 text-center text-xl sm:text-2xl font-black rounded-lg bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 text-indigo-600 dark:text-indigo-400 py-1"
                   />
                   <button
                     onClick={() => handleUpdateFraction(idx, 'den', frac.den + 1)}
-                    className="w-5 h-5 rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center transition"
+                    className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-sm font-black flex items-center justify-center transition active:scale-95 touch-manipulation"
+                    aria-label="Aumentar denominador"
                   >
                     +
                   </button>
@@ -299,7 +303,7 @@ export const LabVisualizerView: React.FC<LabVisualizerViewProps> = ({ t, lang })
                       <button
                         key={o}
                         onClick={() => handleUpdateOp(idx, o)}
-                        className={`w-9 h-9 rounded-xl text-base font-black transition-all ${
+                        className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-sm sm:text-base font-black transition-all active:scale-95 touch-manipulation ${
                           ops[idx] === o
                             ? 'bg-indigo-600 text-white shadow-md scale-105'
                             : 'text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700'
@@ -346,13 +350,13 @@ export const LabVisualizerView: React.FC<LabVisualizerViewProps> = ({ t, lang })
       </div>
 
       {/* Visual Dynamic Models Row */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6">
-        <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-6 sm:p-8 shadow-sm space-y-6">
+        <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
           <Layers className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
           <span>{t.visualModelsTitle} ({visualMode === 'circle' ? t.circleModel : t.barModel})</span>
         </h2>
 
-        <div className="flex flex-wrap items-center justify-center gap-6">
+        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6">
           {fractions.map((f, i) => (
             <React.Fragment key={i}>
               <div className="flex flex-col items-center">

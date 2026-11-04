@@ -25,6 +25,8 @@ import { OfflineBanner } from './components/OfflineBanner';
 import { GamePlayModal } from './views/GamePlayModal';
 import { ProfileManagerModal } from './components/ProfileManagerModal';
 import { DailyReminderModal } from './components/DailyReminderModal';
+import { PromoKitModal } from './components/PromoKitModal';
+import { MobileTabBar } from './components/MobileTabBar';
 
 // Views
 import { AdventureView } from './views/AdventureView';
@@ -73,6 +75,7 @@ export default function App() {
   // Modals
   const [isProfileModalOpen, setIsProfileModalOpen] = useState<boolean>(false);
   const [isReminderModalOpen, setIsReminderModalOpen] = useState<boolean>(false);
+  const [isPromoModalOpen, setIsPromoModalOpen] = useState<boolean>(false);
 
   // Active Mission / Question State
   const [activeProblems, setActiveProblems] = useState<Problem[] | null>(null);
@@ -360,6 +363,10 @@ export default function App() {
           sounds.playClick();
           setIsReminderModalOpen(true);
         }}
+        onOpenPromo={() => {
+          sounds.playClick();
+          setIsPromoModalOpen(true);
+        }}
         soundEnabled={soundEnabled}
         onToggleSound={handleToggleSound}
         isDarkMode={isDarkMode}
@@ -370,7 +377,7 @@ export default function App() {
       />
 
       {/* Main Content Body */}
-      <main className="flex-1 pb-16">
+      <main className="flex-1 pb-24 lg:pb-16">
         {currentTab === 'aventura' && (
           <AdventureView
             profile={currentProfile}
@@ -451,6 +458,15 @@ export default function App() {
         />
       )}
 
+      {/* Promotional Kit & Logo Modal */}
+      <PromoKitModal
+        isOpen={isPromoModalOpen}
+        onClose={() => setIsPromoModalOpen(false)}
+        lang={lang}
+        t={t}
+        onToast={showToast}
+      />
+
       {/* In-App Toast Notification */}
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 max-w-sm rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 p-4 shadow-2xl border border-slate-800 dark:border-slate-200 animate-in slide-in-from-bottom duration-200 text-xs sm:text-sm font-semibold flex items-center gap-3">
@@ -460,7 +476,7 @@ export default function App() {
       )}
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800/80 py-6 text-center text-xs text-slate-500 dark:text-slate-400">
+      <footer className="border-t border-slate-200 dark:border-slate-800/80 py-6 text-center text-xs text-slate-500 dark:text-slate-400 mb-16 lg:mb-0">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <span className="flex flex-wrap items-center justify-center sm:justify-start gap-1">
             <span>{t.appName} · {lang === 'ru' ? 'Образовательная платформа по математике' : 'Plataforma Educativa Gamificada de Matemáticas'}</span>
@@ -469,7 +485,15 @@ export default function App() {
               {lang === 'ru' ? 'Преподаватель' : 'Docente'}: Liliana Alvarez - Mg Domi1
             </span>
           </span>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4">
+            <button
+              onClick={() => setIsPromoModalOpen(true)}
+              className="hover:underline font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1"
+            >
+              <span>✨</span>
+              <span>{lang === 'ru' ? 'Логотип и промо' : 'Logo y Kit Promocional'}</span>
+            </button>
+            <span>·</span>
             <button onClick={() => setCurrentTab('logros')} className="hover:underline">
               {t.navAchievements}
             </button>
@@ -484,6 +508,14 @@ export default function App() {
           </div>
         </div>
       </footer>
+
+      {/* Dedicated Native-like Mobile Bottom Navigation Bar */}
+      <MobileTabBar
+        currentTab={currentTab}
+        onTabChange={setCurrentTab}
+        t={t}
+        pendingMistakesCount={mistakes.filter(m => !m.solvedAgain).length}
+      />
     </div>
   );
 }

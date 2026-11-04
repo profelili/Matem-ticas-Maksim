@@ -80,17 +80,17 @@ export const AdventureView: React.FC<AdventureViewProps> = ({
           <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-transparent" />
         </div>
 
-        <div className="relative z-10 p-6 sm:p-10 max-w-2xl text-white space-y-4">
+        <div className="relative z-10 p-5 sm:p-10 max-w-2xl text-white space-y-3 sm:space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 border border-indigo-400/30 text-indigo-300 text-xs font-bold">
             <Sparkles className="w-3.5 h-3.5" />
             <span>{t.heroBadge}</span>
           </div>
 
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
             {t.heroTitle}
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
+          <p className="text-xs sm:text-base text-slate-300 leading-relaxed">
             {t.heroDesc}
           </p>
 
@@ -100,13 +100,13 @@ export const AdventureView: React.FC<AdventureViewProps> = ({
                 const nextLevel = LEVELS.find(l => l.id === profile.unlockedLevel) || LEVELS[0];
                 startMission(nextLevel);
               }}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold text-sm shadow-lg transition-transform active:scale-95"
+              className="flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 active:bg-indigo-700 text-white font-bold text-xs sm:text-sm shadow-lg transition-transform active:scale-95 touch-manipulation min-h-[42px]"
             >
               <Play className="w-4 h-4 fill-white" />
               <span>{t.continueLevel} {profile.unlockedLevel}</span>
             </button>
 
-            <div className="flex items-center gap-4 text-xs font-semibold text-slate-300 bg-slate-800/80 backdrop-blur-md px-4 py-2.5 rounded-xl border border-slate-700">
+            <div className="flex items-center gap-3 sm:gap-4 text-xs font-semibold text-slate-300 bg-slate-800/80 backdrop-blur-md px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-slate-700">
               <span className="flex items-center gap-1.5 text-amber-400">
                 <Star className="w-4 h-4 fill-amber-400" />
                 <strong className="text-white text-sm tabular-nums">{profile.stars}</strong> {t.stars}
@@ -121,7 +121,7 @@ export const AdventureView: React.FC<AdventureViewProps> = ({
       </div>
 
       {/* Quick Play Strip */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-3">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white">
@@ -132,12 +132,12 @@ export const AdventureView: React.FC<AdventureViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-medium self-start sm:self-auto">
+          <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-medium overflow-x-auto max-w-full scrollbar-none self-start sm:self-auto">
             {(['basico', 'intermedio', 'avanzado', 'experto'] as DifficultyLevel[]).map(diff => (
               <button
                 key={diff}
                 onClick={() => setSelectedDifficulty(diff)}
-                className={`px-3 py-1.5 rounded-lg capitalize transition-colors ${
+                className={`px-3 py-1.5 rounded-lg capitalize whitespace-nowrap transition-colors min-h-[32px] touch-manipulation active:scale-95 ${
                   selectedDifficulty === diff
                     ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-bold shadow-xs'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'

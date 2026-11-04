@@ -110,11 +110,11 @@ export const GamePlayModal: React.FC<GamePlayModalProps> = ({
   const timerPercent = totalTime && timeRemaining !== undefined ? (timeRemaining / totalTime) * 100 : 100;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200">
+      <div className="w-full max-w-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[92dvh] sm:max-h-[90vh]">
         {/* Header Bar */}
-        <div className="px-5 py-3.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
-          <div className="flex items-center gap-3">
+        <div className="px-3.5 sm:px-5 py-3 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50">
+          <div className="flex items-center gap-2 sm:gap-3">
             {questionNumber && (
               <span className="text-xs font-bold text-slate-500 dark:text-slate-400 tabular-nums">
                 {t.questionProgress} {questionNumber} {totalQuestions ? `/ ${totalQuestions}` : ''}
@@ -128,17 +128,17 @@ export const GamePlayModal: React.FC<GamePlayModalProps> = ({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2">
             <button
               onClick={() => setShowVisualModel(v => !v)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition"
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-lg text-xs font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/40 hover:bg-indigo-100 dark:hover:bg-indigo-900/60 transition active:scale-95 touch-manipulation"
             >
               <Eye className="w-3.5 h-3.5" />
-              <span>{showVisualModel ? t.hideVisual : t.showVisual}</span>
+              <span className="hidden sm:inline">{showVisualModel ? t.hideVisual : t.showVisual}</span>
             </button>
             <button
               onClick={onClose}
-              className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 rounded-lg transition"
+              className="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 p-1.5 rounded-lg transition active:scale-95"
             >
               <X className="w-5 h-5" />
             </button>
@@ -158,14 +158,14 @@ export const GamePlayModal: React.FC<GamePlayModalProps> = ({
         )}
 
         {/* Modal Scrollable Body */}
-        <div className="p-5 sm:p-6 overflow-y-auto space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-5 sm:space-y-6">
           {/* Main Math Expression Card */}
-          <div className="flex items-center justify-center gap-4 sm:gap-6 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
+          <div className="flex items-center justify-center gap-2.5 sm:gap-6 p-4 sm:p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800">
             <FractionDisplay fraction={problem.f1} size="xl" highlightColor="text-indigo-600 dark:text-indigo-400" />
-            <span className="text-3xl sm:text-4xl font-black text-slate-400 dark:text-slate-500">{opSign}</span>
+            <span className="text-2xl sm:text-4xl font-black text-slate-400 dark:text-slate-500">{opSign}</span>
             <FractionDisplay fraction={problem.f2} size="xl" highlightColor="text-indigo-600 dark:text-indigo-400" />
-            <span className="text-3xl sm:text-4xl font-black text-slate-400 dark:text-slate-500">=</span>
-            <span className="text-3xl sm:text-4xl font-black text-indigo-500">?</span>
+            <span className="text-2xl sm:text-4xl font-black text-slate-400 dark:text-slate-500">=</span>
+            <span className="text-2xl sm:text-4xl font-black text-indigo-500">?</span>
           </div>
 
           {/* Interactive Visual Models Section */}
@@ -238,7 +238,7 @@ export const GamePlayModal: React.FC<GamePlayModalProps> = ({
                       <button
                         key={idx}
                         onClick={() => handleSelectOption(opt)}
-                        className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-center ${
+                        className={`p-3.5 sm:p-4 rounded-2xl border-2 transition-all flex items-center justify-center min-h-[64px] active:scale-95 touch-manipulation select-none ${
                           isSelected
                             ? 'border-indigo-600 bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 ring-2 ring-indigo-500/20 shadow-md scale-[1.02]'
                             : 'border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800/80 hover:border-slate-300 dark:hover:border-slate-600 text-slate-800 dark:text-slate-200'

@@ -255,24 +255,24 @@ export const TimeAttackView: React.FC<TimeAttackViewProps> = ({
           </div>
 
           {/* Question Board */}
-          <div className="p-8 sm:p-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-md text-center space-y-8">
-            <div className="flex items-center justify-center gap-4 sm:gap-8">
+          <div className="p-4 sm:p-8 md:p-12 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-md text-center space-y-6 sm:space-y-8">
+            <div className="flex items-center justify-center gap-2.5 sm:gap-6 md:gap-8">
               <FractionDisplay fraction={currentProblem.f1} size="xl" highlightColor="text-indigo-600 dark:text-indigo-400" />
-              <span className="text-4xl sm:text-5xl font-black text-slate-400">
+              <span className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-400">
                 {currentProblem.operation === '*' ? '×' : currentProblem.operation === '/' ? '÷' : currentProblem.operation === '-' ? '−' : '+'}
               </span>
               <FractionDisplay fraction={currentProblem.f2} size="xl" highlightColor="text-indigo-600 dark:text-indigo-400" />
-              <span className="text-4xl sm:text-5xl font-black text-slate-400">=</span>
-              <span className="text-4xl sm:text-5xl font-black text-amber-500">?</span>
+              <span className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-400">=</span>
+              <span className="text-2xl sm:text-4xl md:text-5xl font-black text-amber-500">?</span>
             </div>
 
             {/* Fast Option Buttons */}
-            <div className="grid grid-cols-2 gap-4 max-w-xl mx-auto">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4 max-w-xl mx-auto">
               {currentProblem.options.map((opt, i) => (
                 <button
                   key={i}
                   onClick={() => handleSelectOption(opt)}
-                  className="p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:border-indigo-400 transition transform active:scale-95 flex items-center justify-center shadow-xs"
+                  className="p-3.5 sm:p-5 rounded-2xl border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-indigo-50 dark:hover:bg-indigo-950/40 hover:border-indigo-400 transition transform active:scale-95 flex items-center justify-center shadow-xs min-h-[64px] touch-manipulation select-none"
                 >
                   <FractionDisplay fraction={opt} size="lg" />
                 </button>

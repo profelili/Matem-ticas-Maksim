@@ -78,53 +78,53 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ profile, t, lang }
       </div>
 
       {/* KPI Cards Strip */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">{t.totalSolved}</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="flex items-center justify-between text-slate-400 mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">{t.totalSolved}</span>
             <Target className="w-4 h-4 text-indigo-500" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tabular-nums">
+          <div className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tabular-nums">
             {stats.totalSolved}
           </div>
-          <span className="text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold tabular-nums">
+          <span className="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400 font-semibold tabular-nums">
             {stats.totalCorrect} {t.correct.toLowerCase()}
           </span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">{t.globalAccuracy}</span>
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="flex items-center justify-between text-slate-400 mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">{t.globalAccuracy}</span>
             <ShieldCheck className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tabular-nums">
+          <div className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tabular-nums">
             {overallAccuracy}%
           </div>
-          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+          <div className="w-full bg-slate-100 dark:bg-slate-800 h-1.5 rounded-full mt-1.5 sm:mt-2 overflow-hidden">
             <div className="bg-emerald-500 h-full rounded-full transition-all" style={{ width: `${overallAccuracy}%` }} />
           </div>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">{t.bestStreak}</span>
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="flex items-center justify-between text-slate-400 mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">{t.bestStreak}</span>
             <Zap className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tabular-nums">
+          <div className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tabular-nums">
             {stats.bestStreak}
           </div>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">{t.streakLabel}</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">{t.streakLabel}</span>
         </div>
 
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="flex items-center justify-between text-slate-400 mb-2">
-            <span className="text-xs font-bold uppercase tracking-wider">{t.maxScore}</span>
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+          <div className="flex items-center justify-between text-slate-400 mb-1.5 sm:mb-2">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">{t.maxScore}</span>
             <Award className="w-4 h-4 text-purple-500" />
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 tabular-nums">
+          <div className="text-xl sm:text-3xl font-black text-indigo-600 dark:text-indigo-400 tabular-nums">
             {stats.highScoreTimeAttack}
           </div>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">{t.points}</span>
+          <span className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400">{t.points}</span>
         </div>
       </div>
 
@@ -163,7 +163,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({ profile, t, lang }
       ) : null}
 
       {/* Chart Selector Tab */}
-      <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-semibold w-fit">
+      <div className="flex items-center gap-1 p-1 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-semibold overflow-x-auto max-w-full scrollbar-none w-full sm:w-fit">
         <button
           onClick={() => setActiveTab('operaciones')}
           className={`px-4 py-2 rounded-lg transition ${
