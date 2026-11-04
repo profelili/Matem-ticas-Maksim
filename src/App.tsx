@@ -346,6 +346,42 @@ export default function App() {
     showToast(lang === 'ru' ? 'Пример отмечен как освоенный!' : '¡Ejercicio marcado como dominado!');
   };
 
+  const handleManualSync = async () => {
+    sounds.playClick();
+    if (!isOnline) {
+      showToast(
+        lang === 'ru'
+          ? '⚠️ Нет подключения к интернету. Изменения сохранены локально и синхронизируются автоматически при подключении.'
+          : '⚠️ Modo sin conexión: tus avances están guardados en tu dispositivo y se sincronizarán al reconectar a internet.'
+      );
+      return;
+    }
+
+    const res = await manualSync();
+    if (res && res.success) {
+      sounds.playCorrect();
+      if (res.syncedCount > 0) {
+        showToast(
+          lang === 'ru'
+            ? `☁️ Синхронизация успешна! Отправлено ${res.syncedCount} обновлений в облако.`
+            : `☁️ ¡Sincronización completada! ${res.syncedCount} cambios respaldados con éxito en la nube.`
+        );
+      } else {
+        showToast(
+          lang === 'ru'
+            ? '☁️ Все профили, статистика и рекорды уже синхронизированы с облаком!'
+            : '☁️ ¡Sincronizado! Tu perfil, estadísticas, medallas y cuaderno de errores están al día.'
+        );
+      }
+    } else {
+      showToast(
+        lang === 'ru'
+          ? '❌ Не удалось завершить синхронизацию. Попробуйте еще раз.'
+          : '❌ No se pudo completar la sincronización. Intenta nuevamente.'
+      );
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors flex flex-col">
       {/* Offline Connectivity & Cloud Sync Status Banner */}
@@ -353,7 +389,7 @@ export default function App() {
         isOnline={isOnline}
         isSyncing={isSyncing}
         justSyncedCount={justSyncedCount}
-        onManualSync={manualSync}
+        onManualSync={handleManualSync}
         t={t}
       />
 
@@ -519,7 +555,7 @@ export default function App() {
               {t.reminderTitle}
             </button>
             <span>·</span>
-            <button onClick={manualSync} className="hover:underline">
+            <button onClick={handleManualSync} className="hover:underline">
               {t.syncNow}
             </button>
           </div>
@@ -532,6 +568,10 @@ export default function App() {
         onTabChange={setCurrentTab}
         t={t}
         pendingMistakesCount={mistakes.filter(m => !m.solvedAgain).length}
+        isSyncing={isSyncing}
+        onSync={handleManualSync}
+        isOnline={isOnline}
+        lang={lang}
       />
     </div>
   );

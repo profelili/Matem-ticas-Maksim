@@ -378,8 +378,19 @@ export async function syncWithCloud(): Promise<{ success: boolean; syncedCount: 
     const queue: SyncQueueItem[] = raw ? JSON.parse(raw) : [];
     const count = queue.length;
 
-    // Simulate reliable cloud synchronization endpoint
+    // Simulate reliable cloud synchronization transmission
     await new Promise(resolve => setTimeout(resolve, 800));
+
+    // Create cloud backup snapshot of all profiles and mistakes
+    const currentProfiles = localStorage.getItem(STORAGE_KEYS.PROFILES);
+    const currentMistakes = localStorage.getItem(STORAGE_KEYS.MISTAKES);
+    const backupSnapshot = {
+      timestamp: Date.now(),
+      profiles: currentProfiles ? JSON.parse(currentProfiles) : [],
+      mistakes: currentMistakes ? JSON.parse(currentMistakes) : [],
+      status: 'synced',
+    };
+    localStorage.setItem('frac_cloud_backup_v1', JSON.stringify(backupSnapshot));
 
     // Clear queue upon successful transmission
     localStorage.setItem(STORAGE_KEYS.SYNC_QUEUE, JSON.stringify([]));

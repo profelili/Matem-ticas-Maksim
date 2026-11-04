@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
-import { Compass, BookOpen, FlaskConical, Timer, BarChart3, Award } from 'lucide-react';
-import { Translations } from '../utils/i18n';
+import { Compass, BookOpen, FlaskConical, Timer, BarChart3, Award, RefreshCw } from 'lucide-react';
+import { Translations, Language } from '../utils/i18n';
 import { sounds } from '../utils/soundEffects';
 
 interface MobileTabBarProps {
@@ -8,6 +8,10 @@ interface MobileTabBarProps {
   onTabChange: (tab: string) => void;
   t: Translations;
   pendingMistakesCount?: number;
+  isSyncing?: boolean;
+  onSync?: () => void;
+  isOnline?: boolean;
+  lang?: Language;
 }
 
 export const MobileTabBar: React.FC<MobileTabBarProps> = ({
@@ -15,6 +19,10 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({
   onTabChange,
   t,
   pendingMistakesCount = 0,
+  isSyncing = false,
+  onSync,
+  isOnline = true,
+  lang = 'es',
 }) => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
@@ -128,6 +136,43 @@ export const MobileTabBar: React.FC<MobileTabBarProps> = ({
               </button>
             );
           })}
+
+          {/* Sincronizar ahora Button (Placed right after Logros) */}
+          <button
+            type="button"
+            data-tab-id="sync-now"
+            onClick={() => {
+              if (onSync) onSync();
+            }}
+            disabled={isSyncing}
+            className={`relative flex-shrink-0 min-w-[76px] sm:min-w-[84px] flex flex-col items-center justify-center py-1.5 px-2 rounded-xl transition-all duration-150 min-h-[52px] touch-manipulation select-none active:scale-95 ${
+              isSyncing
+                ? 'text-indigo-600 dark:text-indigo-400 font-bold bg-indigo-50/70 dark:bg-indigo-950/50'
+                : 'text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400'
+            }`}
+            title={t.syncNow || 'Sincronizar ahora'}
+            aria-label={t.syncNow || 'Sincronizar ahora'}
+          >
+            <div className="relative">
+              <RefreshCw
+                className={`w-5 h-5 transition-transform ${
+                  isSyncing ? 'animate-spin text-indigo-600 dark:text-indigo-400' : 'stroke-[1.8]'
+                }`}
+              />
+              {!isOnline && (
+                <span
+                  className="absolute -top-1 -right-2 w-2.5 h-2.5 bg-amber-500 rounded-full ring-2 ring-white dark:ring-slate-900"
+                  title="Sin conexión"
+                />
+              )}
+            </div>
+
+            <span className="text-[10px] tracking-tight mt-0.5 truncate max-w-full leading-tight font-medium">
+              {isSyncing
+                ? (lang === 'ru' ? 'Синхр...' : 'Sinc...')
+                : (lang === 'ru' ? 'Синхронизация' : 'Sincronizar')}
+            </span>
+          </button>
         </div>
       </div>
     </nav>

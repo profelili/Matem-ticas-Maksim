@@ -36,7 +36,9 @@ export function useOnlineStatus() {
   }, []);
 
   const manualSync = async () => {
-    if (!isOnline) return;
+    if (!isOnline) {
+      return { success: false, syncedCount: 0, isOnline: false };
+    }
     setIsSyncing(true);
     const res = await syncWithCloud();
     setIsSyncing(false);
@@ -44,6 +46,7 @@ export function useOnlineStatus() {
       setJustSyncedCount(res.syncedCount);
       setTimeout(() => setJustSyncedCount(null), 4000);
     }
+    return { success: res.success, syncedCount: res.syncedCount, isOnline: true };
   };
 
   return { isOnline, isSyncing, justSyncedCount, manualSync };
