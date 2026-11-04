@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, UserPlus, Edit2, RotateCcw, Sparkles, Check, UserCheck } from 'lucide-react';
+import { X, UserPlus, Edit2, RotateCcw, Sparkles } from 'lucide-react';
 import { UserProfile } from '../types/fractions';
 import { AVATARS } from '../utils/storage';
 import { sounds } from '../utils/soundEffects';
@@ -212,54 +212,11 @@ export const ProfileManagerModal: React.FC<ProfileManagerModalProps> = ({
             </form>
           ) : (
             /* Profile List */
-            <div className="space-y-4">
-              {/* Active Student Profile Showcase Card */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-slate-50 dark:via-slate-800/60 to-indigo-500/5 border-2 border-indigo-500/30 dark:border-indigo-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
-                <div className="flex items-center gap-3">
-                  <span className="text-3xl sm:text-4xl p-2 rounded-2xl bg-white dark:bg-slate-800 shadow-xs border border-indigo-200 dark:border-indigo-900 shrink-0">
-                    {AVATARS.find(a => a.id === currentProfile.avatar)?.emoji || '🧑‍🚀'}
-                  </span>
-                  <div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-extrabold text-base text-slate-900 dark:text-white">
-                        {currentProfile.name}
-                      </span>
-                      <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
-                        <UserCheck className="w-3 h-3" />
-                        {t.activeProfile}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      {t.levelLabel} {currentProfile.level} · {currentProfile.xp} XP · {AVATARS.find(a => a.id === currentProfile.avatar)?.name || 'Astronauta'}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    sounds.playClick();
-                    setEditName(currentProfile.name);
-                    setEditAvatar(currentProfile.avatar);
-                    setIsEditing(true);
-                  }}
-                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition active:scale-95 shrink-0"
-                >
-                  <Edit2 className="w-3.5 h-3.5" />
-                  <span>{t.editProfile}</span>
-                </button>
-              </div>
-
-              {/* Profiles Section */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400 px-1">
-                  <span>{t.profilesTitle} ({profiles.length})</span>
-                </div>
-
-                <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
-                  {profiles.map(p => {
-                    const isSelected = p.id === currentProfile.id;
-                    const emoji = AVATARS.find(a => a.id === p.avatar)?.emoji || '🧑‍🚀';
+            <div className="space-y-3">
+              <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+                {profiles.map(p => {
+                  const isSelected = p.id === currentProfile.id;
+                  const emoji = AVATARS.find(a => a.id === p.avatar)?.emoji || '🧑‍🚀';
 
                     return (
                       <div
@@ -331,17 +288,16 @@ export const ProfileManagerModal: React.FC<ProfileManagerModalProps> = ({
                     );
                   })}
                 </div>
-              </div>
 
-            <button
-              onClick={() => setIsCreating(true)}
-              className="w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-xs flex items-center justify-center gap-2 transition"
-            >
-              <UserPlus className="w-4 h-4" />
-              <span>{t.addNewStudent}</span>
-            </button>
-          </div>
-        )}
+                <button
+                  onClick={() => setIsCreating(true)}
+                  className="w-full py-2.5 px-4 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-indigo-500 text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 font-semibold text-xs flex items-center justify-center gap-2 transition"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  <span>{t.addNewStudent}</span>
+                </button>
+              </div>
+            )}
       </div>
     </div>
   );
