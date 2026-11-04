@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, UserPlus, Edit2, RotateCcw, Sparkles } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, UserPlus, Edit2, RotateCcw, Sparkles, Check, UserCheck } from 'lucide-react';
 import { UserProfile } from '../types/fractions';
 import { AVATARS } from '../utils/storage';
 import { sounds } from '../utils/soundEffects';
@@ -34,6 +34,11 @@ export const ProfileManagerModal: React.FC<ProfileManagerModalProps> = ({
 
   const [editName, setEditName] = useState(currentProfile.name);
   const [editAvatar, setEditAvatar] = useState(currentProfile.avatar);
+
+  useEffect(() => {
+    setEditName(currentProfile.name);
+    setEditAvatar(currentProfile.avatar);
+  }, [currentProfile]);
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,9 +80,14 @@ export const ProfileManagerModal: React.FC<ProfileManagerModalProps> = ({
         {/* Edit Current Profile Form */}
         {isEditing ? (
           <form onSubmit={handleSaveEdit} className="space-y-4">
-            <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-              {t.editProfile}
-            </h4>
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                {t.editProfile}
+              </h4>
+              <span className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">
+                {AVATARS.find(a => a.id === editAvatar)?.name || 'Astronauta'}
+              </span>
+            </div>
 
             <div className="space-y-1">
               <label className="text-xs font-semibold text-slate-500">{t.studentName}</label>
@@ -85,35 +95,47 @@ export const ProfileManagerModal: React.FC<ProfileManagerModalProps> = ({
                 type="text"
                 value={editName}
                 onChange={e => setEditName(e.target.value)}
+                placeholder="Nombre del alumno (ej. Maksim)"
                 className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 maxLength={24}
               />
             </div>
 
-            <div className="space-y-1">
+            <div className="space-y-1.5">
               <label className="text-xs font-semibold text-slate-500">{t.chooseAvatar}</label>
-              <div className="grid grid-cols-6 gap-2">
+              <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
                 {AVATARS.map(av => (
                   <button
                     key={av.id}
                     type="button"
-                    onClick={() => setEditAvatar(av.id)}
-                    className={`text-2xl p-2 rounded-xl border transition ${
+                    onClick={() => {
+                      sounds.playClick();
+                      setEditAvatar(av.id);
+                    }}
+                    className={`p-2 rounded-xl border flex flex-col items-center justify-center transition cursor-pointer ${
                       editAvatar === av.id
-                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 ring-2 ring-indigo-500/20'
+                        ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 ring-2 ring-indigo-500/20 shadow-xs'
                         : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800'
                     }`}
                   >
-                    {av.emoji}
+                    <span className="text-2xl">{av.emoji}</span>
+                    <span className="text-[10px] font-bold mt-1 text-slate-700 dark:text-slate-300 truncate max-w-full">
+                      {av.name.split(' ')[0]}
+                    </span>
                   </button>
                 ))}
               </div>
             </div>
 
+            <div className="p-3 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/30 border border-indigo-200/70 dark:border-indigo-900/50 text-xs text-indigo-900 dark:text-indigo-300">
+              💡 Puedes escribir tu nombre real o de fantasía y seleccionar el avatar deseado para personalizar tu aventura matemática.
+            </div>
+
             <div className="flex gap-2 pt-2">
               <button
                 type="submit"
-                className="flex-1 py-2 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs"
+                disabled={!editName.trim()}
+                className="flex-1 py-2 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-xs"
               >
                 {t.save}
               </button>
@@ -190,67 +212,113 @@ export const ProfileManagerModal: React.FC<ProfileManagerModalProps> = ({
             </form>
           ) : (
             /* Profile List */
-            <div className="space-y-3">
-              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
-                {profiles.map(p => {
-                  const isSelected = p.id === currentProfile.id;
-                  const emoji = AVATARS.find(a => a.id === p.avatar)?.emoji || '🦉';
+            <div className="space-y-4">
+              {/* Active Student Profile Showcase Card */}
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-slate-50 dark:via-slate-800/60 to-indigo-500/5 border-2 border-indigo-500/30 dark:border-indigo-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl sm:text-4xl p-2 rounded-2xl bg-white dark:bg-slate-800 shadow-xs border border-indigo-200 dark:border-indigo-900 shrink-0">
+                    {AVATARS.find(a => a.id === currentProfile.avatar)?.emoji || '🧑‍🚀'}
+                  </span>
+                  <div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-extrabold text-base text-slate-900 dark:text-white">
+                        {currentProfile.name}
+                      </span>
+                      <span className="text-[10px] font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                        <UserCheck className="w-3 h-3" />
+                        {t.activeProfile}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                      {t.levelLabel} {currentProfile.level} · {currentProfile.xp} XP · {AVATARS.find(a => a.id === currentProfile.avatar)?.name || 'Astronauta'}
+                    </p>
+                  </div>
+                </div>
 
-                  return (
-                    <div
-                      key={p.id}
-                      onClick={() => {
-                        sounds.playClick();
-                        onSelectProfile(p.id);
-                      }}
-                      className={`p-3 rounded-2xl border transition flex items-center justify-between cursor-pointer ${
-                        isSelected
-                          ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-600 shadow-xs'
-                          : 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 hover:border-slate-300'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <span className="text-2xl p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          {emoji}
-                        </span>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-slate-900 dark:text-white">
-                              {p.name}
-                            </span>
-                            {isSelected && (
-                              <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded-full">
-                                {t.activeProfile}
+                <button
+                  type="button"
+                  onClick={() => {
+                    sounds.playClick();
+                    setEditName(currentProfile.name);
+                    setEditAvatar(currentProfile.avatar);
+                    setIsEditing(true);
+                  }}
+                  className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-xs transition active:scale-95 shrink-0"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                  <span>{t.editProfile}</span>
+                </button>
+              </div>
+
+              {/* Profiles Section */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-400 px-1">
+                  <span>{t.profilesTitle} ({profiles.length})</span>
+                </div>
+
+                <div className="space-y-2 max-h-52 overflow-y-auto pr-1">
+                  {profiles.map(p => {
+                    const isSelected = p.id === currentProfile.id;
+                    const emoji = AVATARS.find(a => a.id === p.avatar)?.emoji || '🧑‍🚀';
+
+                    return (
+                      <div
+                        key={p.id}
+                        onClick={() => {
+                          sounds.playClick();
+                          onSelectProfile(p.id);
+                        }}
+                        className={`p-3 rounded-2xl border transition flex items-center justify-between cursor-pointer ${
+                          isSelected
+                            ? 'bg-indigo-50/80 dark:bg-indigo-950/40 border-indigo-600 shadow-xs'
+                            : 'bg-slate-50/60 dark:bg-slate-800/40 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                            {emoji}
+                          </span>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-sm text-slate-900 dark:text-white">
+                                {p.name}
                               </span>
-                            )}
-                          </div>
-                          <div className="text-xs text-slate-400">
-                            {t.levelLabel} {p.level} · {p.xp} XP · {p.stars} ★
+                              {isSelected && (
+                                <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-100 dark:bg-indigo-900/60 px-2 py-0.5 rounded-full">
+                                  {t.activeProfile}
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-slate-400">
+                              {t.levelLabel} {p.level} · {p.xp} XP · {p.stars} ★
+                            </div>
                           </div>
                         </div>
-                      </div>
 
-                      <div className="flex items-center gap-1">
-                        {onResetStats && (
+                        <div className="flex items-center gap-1">
+                          {onResetStats && (
+                            <button
+                              type="button"
+                              onClick={e => {
+                                e.stopPropagation();
+                                if (window.confirm(t.resetStatsConfirm)) {
+                                  sounds.playClick();
+                                  onResetStats(p.id);
+                                }
+                              }}
+                              className="p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/40 transition"
+                              title={t.resetStatsBtn}
+                            >
+                              <RotateCcw className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                           <button
                             type="button"
                             onClick={e => {
                               e.stopPropagation();
-                              if (window.confirm(t.resetStatsConfirm)) {
-                                sounds.playClick();
-                                onResetStats(p.id);
-                              }
-                            }}
-                            className="p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/40 transition"
-                            title={t.resetStatsBtn}
-                          >
-                            <RotateCcw className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                        {isSelected && (
-                          <button
-                            onClick={e => {
-                              e.stopPropagation();
+                              onSelectProfile(p.id);
+                              setEditName(p.name);
+                              setEditAvatar(p.avatar);
                               setIsEditing(true);
                             }}
                             className="p-1.5 text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -258,11 +326,11 @@ export const ProfileManagerModal: React.FC<ProfileManagerModalProps> = ({
                           >
                             <Edit2 className="w-3.5 h-3.5" />
                           </button>
-                        )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  })}
+                </div>
               </div>
 
             <button

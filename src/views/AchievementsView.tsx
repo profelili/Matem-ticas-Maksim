@@ -9,9 +9,10 @@ interface AchievementsViewProps {
   profile: UserProfile;
   t: Translations;
   lang: Language;
+  onEquipAvatar?: (avatarId: string) => void;
 }
 
-export const AchievementsView: React.FC<AchievementsViewProps> = ({ profile, t, lang }) => {
+export const AchievementsView: React.FC<AchievementsViewProps> = ({ profile, t, lang, onEquipAvatar }) => {
   const xpForNextLevel = profile.level * 200;
   const currentLevelProgress = Math.min(100, Math.round((profile.xp % 200) / 2));
 
@@ -142,12 +143,14 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({ profile, t, 
           {AVATARS.map((av) => {
             const isEquipped = profile.avatar === av.id;
             return (
-              <div
+              <button
                 key={av.id}
-                className={`p-3.5 rounded-2xl border text-center transition-all ${
+                type="button"
+                onClick={() => onEquipAvatar && onEquipAvatar(av.id)}
+                className={`p-3.5 rounded-2xl border text-center transition-all cursor-pointer active:scale-95 ${
                   isEquipped
-                    ? 'border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/30 ring-2 ring-indigo-500/20'
-                    : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40'
+                    ? 'border-indigo-600 bg-indigo-50/60 dark:bg-indigo-950/30 ring-2 ring-indigo-500/20 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:border-indigo-300 dark:hover:border-slate-700'
                 }`}
               >
                 <div className="text-3xl mb-1">{av.emoji}</div>
@@ -156,14 +159,14 @@ export const AchievementsView: React.FC<AchievementsViewProps> = ({ profile, t, 
                 </div>
                 {isEquipped ? (
                   <span className="text-[10px] text-indigo-600 dark:text-indigo-400 font-bold block mt-1">
-                    {t.equipped}
+                    ✓ {t.equipped}
                   </span>
                 ) : (
-                  <span className="text-[10px] text-slate-400 block mt-1">
-                    {t.unlocked}
+                  <span className="text-[10px] text-slate-500 dark:text-slate-400 group-hover:text-indigo-600 block mt-1 font-semibold">
+                    {lang === 'ru' ? 'Выбрать' : 'Elegir'}
                   </span>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>

@@ -105,9 +105,9 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
 ];
 
 export const AVATARS = [
+  { id: 'astronaut', name: 'Astronauta', emoji: '🧑‍🚀', color: 'from-blue-500 to-indigo-600' },
   { id: 'owl', name: 'Búho Sabio', emoji: '🦉', color: 'from-amber-500 to-orange-600' },
   { id: 'fox', name: 'Zorro Astuto', emoji: '🦊', color: 'from-orange-500 to-red-600' },
-  { id: 'astronaut', name: 'Astronauta', emoji: '🧑‍🚀', color: 'from-blue-500 to-indigo-600' },
   { id: 'robot', name: 'Robot Calculador', emoji: '🤖', color: 'from-cyan-500 to-blue-600' },
   { id: 'cat', name: 'Gato Lógico', emoji: '🐱', color: 'from-purple-500 to-pink-600' },
   { id: 'bear', name: 'Oso Analítico', emoji: '🐻', color: 'from-emerald-500 to-teal-600' },
@@ -161,7 +161,7 @@ export function createInitialStats(): UserStats {
   };
 }
 
-export function createNewStudentProfile(name = 'Estudiante', avatar = 'owl'): UserProfile {
+export function createNewStudentProfile(name = 'Maksim Matemático', avatar = 'astronaut'): UserProfile {
   return {
     id: `user_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
     name,
@@ -176,7 +176,7 @@ export function createNewStudentProfile(name = 'Estudiante', avatar = 'owl'): Us
   };
 }
 
-export function createDefaultProfile(name = 'Estudiante', avatar = 'owl'): UserProfile {
+export function createDefaultProfile(name = 'Maksim Matemático', avatar = 'astronaut'): UserProfile {
   return createNewStudentProfile(name, avatar);
 }
 
@@ -209,14 +209,32 @@ export function loadProfiles(): UserProfile[] {
     const raw = localStorage.getItem(STORAGE_KEYS.PROFILES);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // If initial demo profile was Mateo Matemático or Estudiante, migrate to Maksim Matemático & astronaut
+        let modified = false;
+        const updatedProfiles = parsed.map(p => {
+          if (p.name === 'Mateo Matemático' || p.name === 'Estudiante') {
+            modified = true;
+            return {
+              ...p,
+              name: 'Maksim Matemático',
+              avatar: 'astronaut',
+            };
+          }
+          return p;
+        });
+        if (modified) {
+          saveProfiles(updatedProfiles);
+        }
+        return updatedProfiles;
+      }
     }
   } catch (err) {
     console.error('Error loading profiles from localStorage', err);
   }
 
   // Initial demo profile with clean starting stats
-  const defaultProfile = createNewStudentProfile('Mateo Matemático', 'owl');
+  const defaultProfile = createNewStudentProfile('Maksim Matemático', 'astronaut');
   saveProfiles([defaultProfile]);
   localStorage.setItem(STORAGE_KEYS.CURRENT_USER_ID, defaultProfile.id);
   return [defaultProfile];

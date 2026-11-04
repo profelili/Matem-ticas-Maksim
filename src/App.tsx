@@ -190,6 +190,16 @@ export default function App() {
     setProfiles(loadProfiles());
   };
 
+  const handleEquipAvatar = (avatarId: string) => {
+    sounds.playCorrect();
+    handleUpdateProfile(currentProfile.name, avatarId);
+    showToast(
+      lang === 'ru'
+        ? 'Аватар успешно выбран!'
+        : '¡Avatar equipado con éxito!'
+    );
+  };
+
   // Launch a set of level problems
   const handleStartLevel = (levelId: number, problems: Problem[]) => {
     setMissionLevelId(levelId);
@@ -414,7 +424,14 @@ export default function App() {
 
         {currentTab === 'clasificacion' && <LeaderboardView t={t} lang={lang} />}
 
-        {currentTab === 'logros' && <AchievementsView profile={currentProfile} t={t} lang={lang} />}
+        {currentTab === 'logros' && (
+          <AchievementsView
+            profile={currentProfile}
+            t={t}
+            lang={lang}
+            onEquipAvatar={handleEquipAvatar}
+          />
+        )}
       </main>
 
       {/* Active Problem Solving Modal */}
